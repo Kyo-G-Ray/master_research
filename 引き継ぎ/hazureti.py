@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
- 
+
 df = pd.read_csv("aweek.csv", usecols=[0,1])
 print(df.head())
 
@@ -41,9 +41,9 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
     y = pd.Series(y)
     fig, ax = plt.subplots()
 
-# 指数加重移動平均
+    # 指数加重移動平均
     ewm_mean = y.ewm(span=ewm_span).mean()
-# 指数加重移動標準偏差
+    # 指数加重移動標準偏差
     ewm_std = y.ewm(span=ewm_span).std()
 
     ax.plot(y, label='original')
@@ -51,7 +51,7 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
     plt.xlabel("Date", fontsize=18)
     plt.ylabel("10^4kW", fontsize=18)
     
-# 標準偏差から n 倍以上外れているデータを外れ値としてプロットする
+    # 標準偏差から n 倍以上外れているデータを外れ値としてプロットする
     ax.fill_between(y.index,
                     ewm_mean - ewm_std * threshold,
                     ewm_mean + ewm_std * threshold,
@@ -59,20 +59,20 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
     outlier = y[(y - ewm_mean).abs() > ewm_std * threshold]
     ax.scatter(outlier.index, outlier, label='outlier')
     print('outlier: ',outlier.shape)
-#    outlier.interpolate()
-# 週ごと範囲
+    #    outlier.interpolate()
+    # 週ごと範囲
     outlier = outlier.reindex(range(248))
 
-# 日にちごと範囲
-#    outlier = outlier.reindex(range(1736))
-# 時間ごと範囲
-#    outlier = outlier.reindex(range(41664))
+    # 日にちごと範囲
+    #    outlier = outlier.reindex(range(1736))
+    # 時間ごと範囲
+    #    outlier = outlier.reindex(range(41664))
     print(outlier)
 
-#    a = outlier[()]
-#    outlier.to_csv('outlier_week_30.csv')
+    #    a = outlier[()]
+    outlier.to_csv('outlier_week_30.csv')
 
-#    ax.legend()
+    #    ax.legend()
     plt.legend(loc='lower right', bbox_to_anchor=(1, 1))
     return fig
 
