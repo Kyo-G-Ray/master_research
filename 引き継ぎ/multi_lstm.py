@@ -15,7 +15,7 @@ from tensorflow.keras import layers
 
 from sklearn import preprocessing
 
-#データ読み込み　Yは最初の列に配置する
+#データ読み込み Yは最初の列に配置する
 dataframe = pandas.read_csv('aweek_hazureti.csv', usecols=[0,1,5])
 #dataframe['timestamp'] = dataframe['timestamp'].map(lambda _: pandas.to_datetime(_))
 #dataframe.set_index('timestamp', inplace=True)
@@ -48,7 +48,7 @@ def create_dataset(dataset, look_back=1):
         for j in range(dataset.shape[1]):
             a = dataset[i:(i+look_back), j]
             xset.append(a)
-        dataY.append(dataset[i + look_back, 0])      
+        dataY.append(dataset[i + look_back, 0])
         dataX.append(xset)
     return numpy.array(dataX), numpy.array(dataY)
 
@@ -132,7 +132,7 @@ plt.show()
 # invert predictions
 def pad_array(val):
     return numpy.array([numpy.insert(pad_col, 0, x) for x in val])
-    
+
 trainPredict = scaler.inverse_transform(pad_array(trainPredict))
 trainY = scaler.inverse_transform(pad_array(trainY))
 testPredict = scaler.inverse_transform(pad_array(testPredict))
