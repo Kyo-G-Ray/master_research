@@ -7,7 +7,7 @@ import pandas as pd
 
 
 # csv 読み込み
-csv_file = open("./weather.csv", "r", encoding="ms932", errors="", newline="" )
+csv_file = open("./original_data.csv", "r", encoding="UTF-8", errors="", newline="" )
 #リスト形式
 csv = csv.reader(csv_file, delimiter=",", doublequote=True, lineterminator="\r\n", quotechar='"', skipinitialspace=True)
 f = [row for row in csv]
@@ -25,17 +25,30 @@ csv_output = []
 for i in range(1, dayCount + 1, 1):
 
   time_list = []
+  electric_list = []
   temperature_list = []
+  rain_list = []
   wea_list = []
 
+
   # 時間取得・気温・降水量・天気計算
-  for j in range(startRow + (i - 1) * 24, startRow + i * 24 - 1, 1):
+  for j in range(startRow + (i - 1) * 24, startRow + i * 24, 1):
+
+    # --- 電力使用量 ---
+    electric_list.append(int(f[j][12]))
+
+
     # --- 時間 ---
-    time_list.append(f[j][0])
+    time = str(datetime.datetime.strptime(f[j][0], '%Y/%m/%d %H:%M'))
+    time_list.append(time)
 
 
     # --- 気温 ---
     temperature_list.append(float(f[j][1]))
+
+
+    # --- 降水量 ---
+    rain_list.append(float(f[j][4]))
 
 
     # --- 天気 ---
@@ -79,39 +92,23 @@ for i in range(1, dayCount + 1, 1):
     day_wea = [0.5] * 24
 
 
-  # 超ウルトラスーパーめちゃんこ汚いが，日付を取得し，YYYY-MM-DD にした．解読しないほうがよい．
-  # date = str(datetime.datetime.strptime(f[startRow + (i - 1) * 24][0].split()[0], '%Y/%m/%d')).split()[0]
-  # 気温
-  temperature = format(np.average(temperature_list), '.1f')
-  day_temperature = [temperature] * 24
-
   # 出力用配列に追加
-  csv_output.append([time_list, day_temperature, day_wea]) # 日付・温度・天気 を配列に追加
+  csv_output.append([time_list, electric_list, temperature_list, rain_list, day_wea]) # 日付・温度・天気 を配列に追加
 
 
-
-# for ff in range(3):
-#   print(csv_output[ff], '\n')
-
-
-
-# f = open("./data_2021.csv", mode="w", newline="")
-
-# writer = csv.writer(f)
-# for data in csv_output:
-#   writer.writerow(data)
-# f.close()
 
 
 # データフレームを作成
 to_list = []
-to_list_tmp = []
-column = ['DAY', 'TEMP', 'WEATHER']
+to_list_temporary = []
+column = ['timestamp', 'RESULT', 'TEMP', 'RAIN', 'WEATHER']
+
 
 for i in range(dayCount):
-  for j in range(23):
-    to_list_tmp = [csv_output[i][0][j], csv_output[i][1][j], csv_output[i][2][j]]
-    to_list.append(to_list_tmp)
-# print(to_list)
+  for j in range(24):
+    to_list_temporary = [csv_output[i][0][j], csv_output[i][1][j], csv_output[i][2][j], csv_output[i][3][j], csv_output[i][4][j]]
+    to_list.append(to_list_temporary)
+
+
 df = pd.DataFrame(to_list, columns=column)
-df.to_csv("./data_2021.csv", index=False)
+df.to_csv("./time_2021.csv", index=False)
