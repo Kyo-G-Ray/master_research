@@ -16,13 +16,16 @@ from tensorflow.keras import layers
 
 from sklearn import preprocessing
 
+
+
+
 # データ読み込み
 # df_2016 = pd.read_csv('df_2016.csv')
 # df_2017 = pd.read_csv('df_2017.csv')
 # df_2018 = pd.read_csv('df_2018.csv')
 # df_2019 = pd.read_csv('df_2019.csv')
 # df_2020 = pd.read_csv('df_2020.csv')
-dataframe = pd.read_csv('aweek.csv',usecols=[1])
+dataframe = pd.read_csv('./data/week.csv',usecols=[1])
 print(dataframe)
 
 # データ結合
@@ -57,14 +60,19 @@ dataset = scaler.fit_transform(dataset)
 #data = df
 #data = df['GW_normalized']
 #data = data.drop(columns = ['RESULT'])
-print('dataset; ',dataset)
+print('dataset; ', dataset)
+
+
 
 # 学習データの作成
 X, Y = [], []
 
+
 # 入力系列の長さ 
 in_sequences = 10
 # 上記の場合，長さ10の系列を入力とし，次の11番目の値を予測するように学習する
+
+
 
 # 入出力のペアを作る
 for i in range(len(dataset) - in_sequences):
@@ -73,7 +81,8 @@ for i in range(len(dataset) - in_sequences):
     X.append(tmp_x)
     Y.append(tmp_y)    
     #print("{}, x: {} -> y: {}".format(i, tmp_x, tmp_y))
-    
+
+
 # リスト形式をnumpy配列に変換
 X = np.array(X)
 Y = np.array(Y)
@@ -81,10 +90,12 @@ Y = np.array(Y)
 print(X.shape, Y.shape)
 print("{} -> {}".format(X[0], Y[0]))
 
+
 # 形状を変更
 #X = X.reshape(len(X), in_sequences, 4)
 #Y = Y.reshape(len(X), 4)
 #print("X: {}, Y: {}".format(X.shape, Y.shape))
+
 
 # 学習データを訓練とテストに分割（8:2）
 train_ratio = 0.8
@@ -100,6 +111,7 @@ y_test = Y[train_len:]
 #print("Train, x: {}, y: {}".format(x_train.shape, y_train.shape))
 #print("Test, x: {}, y: {}".format(x_test.shape, y_test.shape))
 
+
 # 学習データを訓練とテストに分割（8:2）
 #from sklearn.model_selection import train_test_split
 
@@ -111,11 +123,15 @@ y_test = Y[train_len:]
 #print('x_test; ', x_test.shape)
 #print('y_test; ', y_test.shape)
 
+
+
 # モジュールのインポート
 import tensorflow as tf
 import tensorflow.compat.v1 as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+
+
 
 # RNNモデルの構築
 hidden_neurons = 300
@@ -138,12 +154,16 @@ model.compile(loss="mean_squared_error", optimizer=opt)
 #callback で学習終了条件を追加
 call = keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, verbose=1, mode='auto')
 
+
 # 学習
 history = model.fit(x_train, y_train, 
                     batch_size=1, epochs=100,
                     validation_data=(x_test, y_test))
 
+
+
 # 誤差曲線をプロット
+plt.figure(figsize=(12, 6))
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
 plt.title('model loss')
@@ -152,11 +172,13 @@ plt.ylabel('loss')
 plt.legend(['training', 'validation'], loc='upper right')
 plt.show()
 
+
 # 学習後の精度を評価
 score_train = model.evaluate(x_train, y_train, verbose=0)    
 score_test = model.evaluate(x_test, y_test, verbose=0)    
 print('Train loss:', score_train)
 print('Test loss:', score_test)
+
 
 # テストデータに対する予測結果
 y_train_predicted = model.predict(x_train)
@@ -166,6 +188,7 @@ tra = pd.DataFrame(y_train_predicted)
 tra.to_csv('./rnn/week/rnn_3_300_tra.csv')
 tes = pd.DataFrame(y_test_predicted)
 tes.to_csv('./rnn/week/rnn_3_300_tes.csv')
+
 
 # calculate root mean squared error
 trainScore = math.sqrt(mean_squared_error(y_train[:,0], y_train_predicted[:,0]))
@@ -177,10 +200,12 @@ print('Train Score: %.5f RMSE' % (trainScore))
 testScore = math.sqrt(mean_squared_error(y_test[:,0], y_test_predicted[:,0]))
 print('Test Score: %.5f RMSE' % (testScore))
 
+
 #入力と予測値を 0 から 1 にして誤差計算
 #print('testY[:,0]:',testY[:,0])
 #print('testY[:,0].shape:',testY[:,0].shape)
 #print('testY[:,0]:',preprocessing.minmax_scale(testY[:,0]))
+
 
 trainScore_2 = math.sqrt(mean_squared_error(preprocessing.minmax_scale(y_train[:,0]), preprocessing.minmax_scale(y_train_predicted[:,0])))
 print('Train Score_2: %.5f RMSE' % (trainScore_2))
@@ -188,8 +213,10 @@ print('Train Score_2: %.5f RMSE' % (trainScore_2))
 testScore_2 = math.sqrt(mean_squared_error(preprocessing.minmax_scale(y_test[:,0]), preprocessing.minmax_scale(y_test_predicted[:,0])))
 print('Test Score_2: %.5f RMSE' % (testScore_2))
 
+
+
 # プロット
-plt.figure(figsize=(16, 4))
+plt.figure(figsize=(12, 6))
 plt.plot(y_train, label = 'original(train)')
 plt.plot(y_train_predicted, label = 'predicted(train)')
 plt.xlabel("Date")
@@ -197,8 +224,9 @@ plt.ylabel("GW")
 plt.legend()
 plt.show()
 
+
 # プロット
-plt.figure(figsize=(16, 4))
+plt.figure(figsize=(12, 6))
 plt.plot(y_test, label = 'original(test)')
 plt.plot(y_test_predicted, label = 'predicted(test)')
 plt.xlabel("Date")

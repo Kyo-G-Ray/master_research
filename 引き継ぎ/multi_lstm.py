@@ -15,6 +15,8 @@ from tensorflow.keras import layers
 
 from sklearn import preprocessing
 
+
+
 #データ読み込み Yは最初の列に配置する
 dataframe = pandas.read_csv('aweek_hazureti.csv', usecols=[0,1,5])
 #dataframe['timestamp'] = dataframe['timestamp'].map(lambda _: pandas.to_datetime(_))
@@ -26,18 +28,22 @@ dataframe.set_index('DAY', inplace=True)
 #plt.show()
 print(dataframe.head())
 
+
 dataset = dataframe.values
 dataset = dataset.astype('float32')
+
 
 # normalize the dataset
 scaler = MinMaxScaler(feature_range=(0, 1))
 dataset = scaler.fit_transform(dataset)
+
 
 # split into train and test sets
 train_size = int(len(dataset) * 0.8)
 test_size = len(dataset) - train_size
 train, test = dataset[0:train_size,:], dataset[train_size:len(dataset),:]
 print(len(train), len(test))
+
 
 # convert an array of values into a dataset matrix
 # if you give look_back 3, a part of the array will be like this: Jan, Feb, Mar
@@ -63,6 +69,7 @@ print('testY[0]',testY[0])
 print('testX',testX)
 print('testY',testY)
 
+
 # reshape input to be [samples, time steps(number of variables), features] *convert time series into column
 trainX = numpy.reshape(trainX, (trainX.shape[0], trainX.shape[1], trainX.shape[2]))
 testX = numpy.reshape(testX, (testX.shape[0], testX.shape[1], testX.shape[2]))
@@ -70,23 +77,26 @@ testX = numpy.reshape(testX, (testX.shape[0], testX.shape[1], testX.shape[2]))
 # create and fit the LSTM network
 hidden_neurons = 300
 
+
 model = keras.Sequential()
 #model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))	#shape：変数数、遡る時間数
+
 
 #2 層の時
 #model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
 #model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+
 
 #3 層の時
 model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
 model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
 model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
 
-
 model.add(keras.layers.Dense(1))
 #model.compile(loss='mean_squared_error', optimizer='adam')
 model.add(keras.layers.Activation("relu"))
 #model.fit(trainX, trainY, epochs=1, batch_size=1, verbose=2)
+
 
 model.summary()
 
@@ -94,18 +104,24 @@ model.summary()
 opt = keras.optimizers.Adam(lr=0.001)
 model.compile(loss='mean_squared_error', optimizer=opt)
 
+
+
 #callback で学習終了条件を追加
 call = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
 
 # time
 #history = model.fit(trainX, trainY, epochs=1000, batch_size=64, verbose=1,callbacks=[call], validation_split=0.1)
+
 # day
 #history = model.fit(trainX, trainY, epochs=1000, batch_size=3, verbose=1,callbacks=[call], validation_split=0.1)
+
 # week
 history = model.fit(trainX, trainY, epochs=1000, batch_size=1, verbose=1,callbacks=[call], validation_split=0.1)
 
 #callback なし
 #history = model.fit(trainX, trainY, epochs=50, batch_size=1, verbose=1, validation_split=0.1)
+
+
 
 # make predictions
 trainPredict = model.predict(trainX)
@@ -129,14 +145,17 @@ plt.ylabel('loss')
 plt.legend(['training', 'validation'], loc='upper right')
 plt.show()
 
+
 # invert predictions
 def pad_array(val):
     return numpy.array([numpy.insert(pad_col, 0, x) for x in val])
+
 
 trainPredict = scaler.inverse_transform(pad_array(trainPredict))
 trainY = scaler.inverse_transform(pad_array(trainY))
 testPredict = scaler.inverse_transform(pad_array(testPredict))
 testY = scaler.inverse_transform(pad_array(testY))
+
 
 # calculate root mean squared error
 trainScore = math.sqrt(mean_squared_error(trainY[:,0], trainPredict[:,0]))
@@ -148,13 +167,16 @@ print('Train Score: %.5f RMSE' % (trainScore))
 testScore = math.sqrt(mean_squared_error(testY[:,0], testPredict[:,0]))
 print('Test Score: %.5f RMSE' % (testScore))
 
+
 #入力と予測値を 0 から 1 にして誤差計算
 #print('testY[:,0]:',testY[:,0])
 #print('testY[:,0].shape:',testY[:,0].shape)
 #print('testY[:,0]:',preprocessing.minmax_scale(testY[:,0]))
 
+
 trainScore_2 = math.sqrt(mean_squared_error(preprocessing.minmax_scale(trainY[:,0]), preprocessing.minmax_scale(trainPredict[:,0])))
 print('Train Score_2: %.5f RMSE' % (trainScore_2))
+
 
 testScore_2 = math.sqrt(mean_squared_error(preprocessing.minmax_scale(testY[:,0]), preprocessing.minmax_scale(testPredict[:,0])))
 print('Test Score_2: %.5f RMSE' % (testScore_2))
@@ -163,14 +185,18 @@ print('Test Score_2: %.5f RMSE' % (testScore_2))
 
 #print(testY[:,0])
 #print(testPredict[:,0])
+
 # shift train predictions for plotting
 trainPredictPlot = numpy.empty_like(dataset)
 trainPredictPlot[:, :] = numpy.nan
 trainPredictPlot[look_back:len(trainPredict)+look_back, :] = trainPredict
+
 # shift test predictions for plotting
 testPredictPlot = numpy.empty_like(dataset)
 testPredictPlot[:, :] = numpy.nan
 testPredictPlot[len(trainPredict)+(look_back*2)+1:len(dataset)-1, :] = testPredict
+
+
 # plot baseline and predictions
 plt.plot(scaler.inverse_transform(dataset))
 plt.plot(trainPredictPlot)
