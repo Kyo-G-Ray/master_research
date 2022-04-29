@@ -41,7 +41,7 @@ plt.ylabel("10^4kW", fontsize=16)
 
 # threshold で何倍以上を外れ値として扱うかを示す
 def plot_outlier(y, ewm_span=16, threshold=1.0):
-    plt.rcParams["figure.figsize"] = (8, 5)
+    plt.rcParams["figure.figsize"] = (10, 7)
     plt.rcParams["font.size"] = 12
     y = pd.Series(y)
     fig, ax = plt.subplots()
@@ -90,7 +90,7 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
 
     #for i in outlier:
     #    print('i: ',i)
-    
+
 
 #for i in range(1000):
 #    if i == outlier:
@@ -98,5 +98,7 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
 #    else:
 #        print('0')
 
+
 plot_outlier(y)
+plt.savefig('./fig/outlier.eps')
 plt.show()
