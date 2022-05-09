@@ -15,7 +15,6 @@ print(df.head())
 
 # day
 x = df['timestamp'].values
-
 y = df['RESULT'].values
 
 
@@ -82,7 +81,7 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
 
 
     #    a = outlier[()]
-    outlier.to_csv('outlier_week_30.csv')
+    outlier.to_csv('output/outlier_week_30.csv')
 
     #    ax.legend()
     plt.legend(loc='lower right', bbox_to_anchor=(1, 1))

@@ -170,6 +170,7 @@ plt.title('model loss')
 plt.xlabel('epoch')
 plt.ylabel('loss')
 plt.legend(['training', 'validation'], loc='upper right')
+plt.savefig('./fig/rnn_gosakyokusen.eps')
 plt.show()
 
 
@@ -222,6 +223,7 @@ plt.plot(y_train_predicted, label = 'predicted(train)')
 plt.xlabel("Date")
 plt.ylabel("GW")
 plt.legend()
+plt.savefig('./fig/rnn_train.eps')
 plt.show()
 
 
@@ -232,4 +234,5 @@ plt.plot(y_test_predicted, label = 'predicted(test)')
 plt.xlabel("Date")
 plt.ylabel("GW")
 plt.legend()
+plt.savefig('./fig/rnn_test.eps')
 plt.show()
