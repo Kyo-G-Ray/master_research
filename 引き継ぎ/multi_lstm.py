@@ -18,7 +18,7 @@ from sklearn import preprocessing
 
 
 #データ読み込み Yは最初の列に配置する
-dataframe = pandas.read_csv('aweek_hazureti.csv', usecols=[0,1,5])
+dataframe = pandas.read_csv('./data/week_hazureti.csv', usecols=[0,1,5])
 #dataframe['timestamp'] = dataframe['timestamp'].map(lambda _: pandas.to_datetime(_))
 #dataframe.set_index('timestamp', inplace=True)
 dataframe['DAY'] = dataframe['DAY'].map(lambda _: pandas.to_datetime(_))
@@ -143,6 +143,7 @@ plt.title('model loss')
 plt.xlabel('epoch')
 plt.ylabel('loss')
 plt.legend(['training', 'validation'], loc='upper right')
+plt.savefig('fig/lstm_gosakyokusen.eps')
 plt.show()
 
 
@@ -201,4 +202,5 @@ testPredictPlot[len(trainPredict)+(look_back*2)+1:len(dataset)-1, :] = testPredi
 plt.plot(scaler.inverse_transform(dataset))
 plt.plot(trainPredictPlot)
 plt.plot(testPredictPlot)
+plt.savefig('fig/lstm_test.eps')
 plt.show()
