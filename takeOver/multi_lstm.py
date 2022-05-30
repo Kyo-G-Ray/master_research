@@ -75,7 +75,7 @@ trainX = numpy.reshape(trainX, (trainX.shape[0], trainX.shape[1], trainX.shape[2
 testX = numpy.reshape(testX, (testX.shape[0], testX.shape[1], testX.shape[2]))
 
 # create and fit the LSTM network
-hidden_neurons = 300
+hidden_neurons = 315
 
 
 model = keras.Sequential()
@@ -116,7 +116,7 @@ call = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, verbose=1,
 #history = model.fit(trainX, trainY, epochs=1000, batch_size=3, verbose=1,callbacks=[call], validation_split=0.1)
 
 # week
-history = model.fit(trainX, trainY, epochs=1000, batch_size=1, verbose=1,callbacks=[call], validation_split=0.1)
+history = model.fit(trainX, trainY, epochs=1000, batch_size=1, verbose=1, callbacks=[call], validation_split=0.1)
 
 #callback なし
 #history = model.fit(trainX, trainY, epochs=50, batch_size=1, verbose=1, validation_split=0.1)
@@ -130,10 +130,10 @@ pad_col = numpy.zeros(dataset.shape[1]-1)
 
 
 #予測結果の保存
-#tra = pandas.DataFrame(trainPredict)
-#tra.to_csv('./lstm/lstm_3_300_tra.csv')
-#tes = pandas.DataFrame(testPredict)
-#tes.to_csv('./lstm/lstm_3_300_tes.csv')
+tra = pandas.DataFrame(trainPredict)
+tra.to_csv('./lstm/lstm_3_315_tra.csv')
+tes = pandas.DataFrame(testPredict)
+tes.to_csv('./lstm/lstm_3_315_tes.csv')
 
 
 # 誤差曲線をプロット
