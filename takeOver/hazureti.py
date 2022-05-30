@@ -11,7 +11,7 @@ df = pd.read_csv("./data/week.csv", usecols=[0,1])
 print(df.head())
 
 # time
-#x = df['timestamp'].values
+# x = df['timestamp'].values
 
 # day
 x = df['timestamp'].values
@@ -70,7 +70,7 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
 
 
     # 週ごと範囲
-    outlier = outlier.reindex(range(300))
+    outlier = outlier.reindex(range(313))
 
     # 日にちごと範囲
     #    outlier = outlier.reindex(range(1736))

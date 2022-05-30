@@ -20,9 +20,10 @@ def date_range(start, stop, step = datetime.timedelta(1)):
 
 
 # 日ごとに配列作って全体の配列に append
-for date in date_range(datetime.date(2016, 4, 1), datetime.date(2021, 12, 31)):
+for date in date_range(datetime.date(2016, 4, 1), datetime.date(2022, 3, 31)):
   # dateを使った処理
-  date = str(datetime.datetime.strftime(date, '%Y-%#m-%#d')).replace('-', '/') + ' '  # 文字列を含むか調べているため 4/1 に 4/10 や 4/11 などが含まれてしまうため，文字列末尾に半角スペース追加
+  date = str(datetime.datetime.strftime(date, '%Y-%#-m-%#-d')).replace('-', '/') + ' '  # 文字列を含むか調べているため 4/1 に 4/10 や 4/11 などが含まれてしまうため，文字列末尾に半角スペース追加
+  print(date)
 
   df_tmp = df[df['timestamp'].str.contains(str(date))]
 
