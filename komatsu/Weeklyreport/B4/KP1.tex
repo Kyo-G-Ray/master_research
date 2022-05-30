@@ -1,0 +1,49 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　KP　予稿\\
+ \huge
+深層学習による動画像からの表情認識手法の開発\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{1}{4}{25}{(木)}{\ 小松　大起}
+
+\section{はじめに}
+\begin{itemize}
+  \item 研究内容の紹介と自己紹介を行う。
+\section{研究内容}
+\begin{itemize}
+          \item 深層学習を用いて表情認識を行う。表情認識を静止画ではなく動画像で行う。表情認識は人間同士でも難しいことがあるので識別させることは難しいと思われるが、最終的には動画を撮りそれを識別できるようになれるとよいと考える。
+          
+\end{itemize}
+
+\section{現在までに行った作業}
+\begin{itemize}
+\item 直近の目標はkerasを用いてconvolution neural networkを実現することであるがそれの前段階として、google colaboratoryで深層学習を行い練習を行う。kerasなどのライブラリがいろいろと入っているので環境設定をせずとも深層学習を実行してみることができる。
+\end{itemize}
+
+\section{自己紹介}
+\begin{itemize}
+\item 愛知県稲沢市出身です。趣味はフォートナイト、パズドラ、ライブに行くこと、飲み会です。
+\end{itemize}
+
+
+
+
+\end{document}

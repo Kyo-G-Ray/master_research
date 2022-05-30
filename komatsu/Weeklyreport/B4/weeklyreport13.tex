@@ -1,0 +1,67 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習による動画像からの表情認識手法の開発\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{13}{7}{10}{(水)}{\ 小松　大起}
+
+\section{CNNとは}
+\begin{itemize}
+\item CNN とは多層 NN の一つで、畳込み NN とも呼ばれる．ネットワーク上に畳込み層とプーリング層の２層を交互に持つネットワークである．$対象とする画像を Wpicsel × Wpicsel の RGB の階調値とし，y^{(k)}_{ij}と表す．$ここで k は RGB の色調を表し k = 1,2,3（N = 3）の値をとる．$畳込み層（i,j）の素子の内部状態 x_{ij} は以下で与えられる．$
+\begin{equation}
+  y^{(a)}_{ij} = \sum_{k=1}^N (\sum_{p=1}^w \sum_{q=1}^w x^{(k)}_{i+p,j+q}h_{ij}^{(k)(a)}+b^{(k)(a)}）
+\end{equation}
+$ここで a はフィルタの数を示し，h_{ijk}^{(k)(a)} は受容野における各素子の係数であり CNN は学習によってこの h_{ijk}^{(k)(a)} を変化させていく，b^{(k)(a)} は色調のしきい値，さらに w × w は受容野の大きさを示し，位置（i,j）の素子は，入力層の限られた範囲からのみ入力を受けることを表している[1]．畳込み層の（i,j）の素子の出力および活性化関数f（x）は以下で与えられる．$
+\begin{eqnarray}
+  \tilde{y}_{ij}^{(a)} = f（y^{(a)}_{ij}）\\
+  f（x）= max(x,0)
+\end{eqnarray}
+$であるが多クラス分類のために出力層には活性化関数 g（x）を用いる．
+$入力 y_j に対して，最終的な出力 z_j は以下で与えられる．$
+\begin{equation}
+  z_i = \frac{e^{\tilde{y}_i}}{\sum_{k=1}^n e^{\tilde{y}_k}}
+\end{equation}
+%で与える．プーリング層の振る舞い方にはいくつかのパターンがあるが今回は最大プーリングと呼ばれる次式を用いる．
+%\begin{equation}
+ % \tilde{y}_{ij}^{(a)} = \max_{p,q \in P_{ij}}
+%\end{equation}
+
+\section{先週までの作業}
+\begin{itemize}
+\item 地方会の予稿の作成．       
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+\item 地方会の予稿の作成．
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+          \item CNN,RNN及びLSTMをそれぞれ実現する。
+          \item 表情の動画像のデータをもっと集める。
+\end{itemize}
+
+
+
+
+\end{document}

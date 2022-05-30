@@ -1,0 +1,58 @@
+\documentclass[a4j,twocolumn]{ltjarticle}
+
+%ページ設定
+\setlength{\topmargin}{-10mm}
+\setlength{\oddsidemargin}{-5mm}
+\setlength{\evensidemargin}{-5mm}
+
+\setlength{\textheight}{230mm}
+\setlength{\textwidth}{170mm}
+\setlength{\columnsep}{10mm}%コラムとコラムの間．よってコラムの横幅は(texwidth-columnsep)/2
+\setlength{\footskip}{15mm}
+%パッケージ
+\usepackage{graphicx,color}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%数学関数
+\newcommand{\B}[1]{\bm #1} 
+\newcommand{\s}[2]{{#1}\cdot{#2}} 
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\M}{\mathbb{M}}
+\newcommand{\df}[2]{\displaystyle{\frac{#1}{#2}}}
+\newcommand{\qed}{
+\begin{flushright}
+\vspace{-8mm}
+$\Box$
+\end{flushright}
+}
+
+%ミニセクション
+\newcommand{\minisection}[2]{\flushleft{\bf (#1)#2}\\ \ \ \ }
+
+%図，表の名前変更
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Tab.}
+
+% refの拡張
+\newcommand{\reffig}[1]{\figurename \ref{#1}}
+\newcommand{\refeq}[1]{式(\ref{#1})}
+\newcommand{\reftab}[1]{\tablename \ref{#1}}
+
+% 図
+\newcommand{\includefigure}[3]{
+\begin{center}
+\includegraphics[width=80mm]{#1}
+\caption{#2}
+\label{#3}
+\end{center}
+}
+% 図 widthを変更したいときはこっち
+\newcommand{\includefigurewidth}[4]{
+\begin{center}
+\includegraphics[width=#2]{#1}
+\caption{#3}
+\label{#4}
+\end{center}
+}

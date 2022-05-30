@@ -1,0 +1,53 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習による動画像からの表情認識手法の開発\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{5}{5}{15}{(水)}{\ 小松　大起}
+
+
+
+
+\section{先週までの作業}
+\begin{itemize}
+\item kerasを使うためにtensorflowをdebian10.0に入れたが、バージョン依存の問題でうまく動作しなかった。バージョン変更しようと思ったが対応しているtensorflowのバージョンが公式でもう配布されていなかったので仮想でubuntsuを使い研究を行うことにした。
+\item 仮想を使うためにvirtualboxとvagrantをインストールした。
+          
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+          \item　仮想環境のubuntuで研究環境を整えた。
+
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+          \item kerasでCNNを実現し、静止画での表情認識を行う
+          \item 表情の動画像のデータをもっと集める
+          \item CNNの仕組みについて学習し、weeklyreportにて発表する。
+\end{itemize}
+
+
+
+
+\end{document}

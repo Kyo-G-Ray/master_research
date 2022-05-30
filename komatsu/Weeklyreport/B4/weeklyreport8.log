@@ -1,0 +1,223 @@
+This is LuaTeX, Version 0.95.0 (TeX Live 2016/Debian)  (format=lualatex 2019.6.12)  12 JUN 2019 11:21
+ restricted system commands enabled.
+**weeklyreport8.tex
+(./weeklyreport8.tex
+LaTeX2e <2017/01/01> patch level 3
+[\directlua]:1: module 'luaotfload-main' not found:
+	no field package.preload['luaotfload-main']
+	[kpse lua searcher] file not found: 'luaotfload-main'
+	[kpse C searcher] file not found: 'luaotfload-main'
+Error in luaotfload: reverting to OT1
+Babel <3.9r> and hyphenation patterns for 1 language(s) loaded.
+(./texheder.tex
+(/usr/share/texlive/texmf-dist/tex/luatex/luatexja/ltjarticle.cls
+Document Class: ltjarticle 2017/01/17 v1.7c-ltj-12 Standard LuaLaTeX-ja class
+(/usr/share/texlive/texmf-dist/tex/luatex/luatexja/luatexja.sty
+Package: luatexja 2016/05/12 Japanese Typesetting with Lua(La)TeX
+
+(/usr/share/texlive/texmf-dist/tex/luatex/luatexja/luatexja-core.sty
+Package: luatexja-core 2016/05/15 Core of LuaTeX-ja
+
+
+! LaTeX Error: File `luatexbase.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2016/05/21 v0.22 Utility functions of pdfTeX for LuaTeX (HO)
+
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2016/05/14 v3.1 Provides the ifpdf switch
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/luatex-loader.sty
+Package: luatex-loader 2016/05/16 v0.6 Lua module loader (HO)
+
+(/usr/share/texlive/texmf-dist/scripts/oberdiek/oberdiek.luatex.lua))
+\pdftexcmds@toks=\toks14
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks15
+\XKV@tempa@toks=\toks16
+
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/keyval.tex))
+\XKV@depth=\count79
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/atbegshi.sty
+Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/everyhook/everyhook.sty
+(/usr/share/texlive/texmf-dist/tex/latex/svn-prov/svn-prov.sty
+Package: svn-prov 2010/04/24 v3.1862 Package Date/Version from SVN Keywords
+)
+Package: everyhook 2014/11/26 v1.2 (SVN Rev: 12)\ Hooks for low level TeX everyX
+ primitives.
+
+(/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2017/01/02 v2.4 e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count80
+)
+\everypar=\toks17
+\frozen@everymath=\toks18
+\frozen@everydisplay=\toks19
+\everyhbox=\toks20
+\everyvbox=\toks21
+\everycr=\toks22
+)
+\ltjlineendcomment=\count81
+\ltj@zw=\dimen102
+\ltj@zh=\dimen103
+\jQ=\dimen104
+\ltj@icflag=\attribute1
+\ltj@curjfnt=\attribute2
+\ltj@curtfnt=\attribute3
+\ltj@origchar=\attribute4
+\ltj@charclass=\attribute5
+\ltj@charcode=\attribute6
+\ltj@autospc=\attribute7
+\ltj@autoxspc=\attribute8
+\ltj@yablshift=\attribute9
+\ltj@ykblshift=\attribute10
+\ltj@tablshift=\attribute11
+\ltj@tkblshift=\attribute12
+\jfam=\attribute13
+\ltj@dir=\attribute14
+\ltj@@japanese=\language1
+\ltj@tempcnta=\count82
+\ltj@kcat0=\attribute15
+\ltj@kcat1=\attribute16
+\ltj@kcat2=\attribute17
+\ltj@kcat3=\attribute18
+\ltj@kcat4=\attribute19
+\ltj@kcat5=\attribute20
+\ltj@kcat6=\attribute21
+...hare/texlive/texmf-dist/tex/luatex/luatexja/luatexja.lua:2: module 'lualibs' 
+not found:
+	no field package.preload['lualibs']
+	[kpse lua searcher] file not found: 'lualibs'
+	[kpse C searcher] file not found: 'lualibs'
+	[oberdiek.luatex.kpse_module_loader] Search failed
+stack traceback:
+	[C]: in function 'require'
+	...hare/texlive/texmf-dist/tex/luatex/luatexja/luatexja.lua:2: in main chunk
+	[C]: in function 'dofile'
+	[\directlua]:1: in main chunk.
+l.179 }
+     
+? 
+(/usr/share/texlive/texmf-dist/tex/luatex/luatexja/ltj-base.sty
+Package: ltj-base 2016/05/15
+\ltj@tempcntb=\count83
+\ltj@tempcntc=\count84
+\ltj@tempdima=\dimen105
+
+! Undefined control sequence.
+l.30 \luatexattributedef
+                      \ltj@@attr@zero=0 %
+? 
+! Undefined control sequence.
+l.30 \luatexattributedef\ltj@@attr@zero
+                                     =0 %
+? 
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.30 \luatexattributedef\ltj@@attr@zero=
+                                      0 %
+? 
+[\directlua]:1: attempt to index field 'base' (a nil value)
+stack traceback:
+	[\directlua]:1: in main chunk.
+<recently read> ...irectlua {luatexja.base._error_set_break("")}
+                                                  
+l.286 }
+     
+? 
+\ltj@afbox=\box26
+)
+Overfull \hbox (20.0pt too wide) in paragraph at lines 30--196
+[]=0
+ []
+
+\ltj@@jfont@inner=\luafunction1
+[\directlua]:1: attempt to index field 'jfont' (a nil value)
+stack traceback:
+	[\directlua]:1: in main chunk.
+l.213   }
+       
+? 
+\ltj@zw@inner=\luafunction2
+\ltj@zh@inner=\luafunction3
+\ltj@reset@globaldefs@inner=\luafunction4
+\ltj@restore@globaldefs@inner=\luafunction5
+\ltj@@ihb@inner=\luafunction6
+[\directlua]:1: attempt to index field 'jfmglue' (a nil value)
+stack traceback:
+	[\directlua]:1: in main chunk.
+l.253   }
+       
+? 
+\ltj@@stack=\count85
+\ltj@@group@level=\count86
+[\directlua]:1: attempt to index field 'stack' (a nil value)
+stack traceback:
+	[\directlua]:1: in main chunk.
+l.292   }
+       %
+? 
+[\directlua]:1: attempt to index field 'stack' (a nil value)
+stack traceback:
+	[\directlua]:1: in main chunk.
+l.297   }
+       %
+? 
+\ltjsetkanjiskip@inner=\luafunction7
+\ltjsetxkanjiskip@inner=\luafunction8
+[\directlua]:1: attempt to index field 'stack' (a nil value)
+stack traceback:
+	[\directlua]:1: in main chunk.
+l.399   }
+       
+? 
+! Emergency stop.
+l.399   }
+       
+End of file on the terminal!
+
+
+
+Here is how much of LuaTeX's memory you used:
+ 1262 strings out of 494577
+ 100000,89155 words of node,token memory allocated 407 words of node memory still in use:
+   3 hlist, 1 local_par, 1 dir, 6 glue, 1 penalty, 2 glyph, 39 attribute, 32 glu
+e_spec, 3 attribute_list, 2 if_stack nodes
+   avail lists: 1:2,2:28,3:1,4:1,5:2,7:2,9:2
+ 5310 multiletter control sequences out of 65536+600000
+ 14 fonts using 591559 bytes
+ 44i,0n,23p,975b,25s stack positions out of 5000i,500n,10000p,200000b,100000s
+!  ==> Fatal error occurred, no output PDF file produced!

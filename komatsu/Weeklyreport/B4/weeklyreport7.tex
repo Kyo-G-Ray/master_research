@@ -1,0 +1,52 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習による動画像からの表情認識手法の開発\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{7}{5}{29}{(水)}{\ 小松　大起}
+
+\section{CNNとは}
+\begin{itemize}
+  \item Convolutional Neural Networkの略称であり、ニューラルネットワークに畳み込みという操作を加えたものである。　その畳み込みとは、画像処理でよく利用される手法で、カーネルと呼ばれる格子状の数値データと、カーネルと同サイズの部分画像の数値データについて、要素ごとの積の和を計算することで、1つの数値に変換する処理のことである。この変換処理を、ウィンドウを少しずつずらして処理を行うことで、小さい格子状の数値データに変換することができる。
+
+\section{先週までの作業}
+\begin{itemize}
+\item openCVをインストールした。
+  \item ホストOSとゲストOSとの間に共有フォルダを作成した。        
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+\item 参考にするプログラムをpython3で使えるように修正する。
+\item texをもう少しうまく使えるように勉強する。
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+          \item kerasでCNNを実現し、静止画での表情認識を行う
+          \item 表情の動画像のデータをもっと集める
+\end{itemize}
+
+
+
+
+\end{document}
