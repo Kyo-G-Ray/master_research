@@ -129,11 +129,11 @@ testPredict = model.predict(testX)
 pad_col = numpy.zeros(dataset.shape[1]-1)
 
 
-#予測結果の保存
-tra = pandas.DataFrame(trainPredict)
-tra.to_csv('./lstm/lstm_3_315_tra.csv')
-tes = pandas.DataFrame(testPredict)
-tes.to_csv('./lstm/lstm_3_315_tes.csv')
+# #予測結果の保存
+# tra = pandas.DataFrame(trainPredict)
+# tra.to_csv('./lstm/lstm_3_315_tra.csv')
+# tes = pandas.DataFrame(testPredict)
+# tes.to_csv('./lstm/lstm_3_315_tes.csv')
 
 
 # 誤差曲線をプロット
@@ -197,6 +197,14 @@ testPredictPlot = numpy.empty_like(dataset)
 testPredictPlot[:, :] = numpy.nan
 testPredictPlot[len(trainPredict)+(look_back*2)+1:len(dataset)-1, :] = testPredict
 
+#予測結果の保存
+original = pandas.DataFrame(scaler.inverse_transform(dataset), columns=['elec', 'what']).iloc[:,0]
+tra = pandas.DataFrame(trainPredictPlot, columns=['elec_tra', 'what']).iloc[:,0]
+# tra.to_csv('./lstm/lstm_3_315_tra_real.csv')
+tes = pandas.DataFrame(testPredictPlot, columns=['elec_tes', 'what']).iloc[:,0]
+# tes.to_csv('./lstm/lstm_3_315_tes_real.csv')
+predict = pandas.concat([tra, tes, original], axis='columns')
+predict.to_csv('./lstm/lstm_3_315_predict.csv')
 
 # plot baseline and predictions
 plt.plot(scaler.inverse_transform(dataset))
