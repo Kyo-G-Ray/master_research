@@ -1,0 +1,1386 @@
+\section{畳み込みニューラルネットワークを用いた表情認識}
+古くから研究が行われている機械学習の分野では,ネットワークの構成をどうするかということが重要な課題の 1 つとされてきた.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{表情認識のための CNN}
+本章ではプログラミング言語には Python を用いた. Python の深層学習ライブラリである Keras を用いてネットワークの構成を行った.\\
+今回の実験では,畳み込み層とプーリング層の組み合わせを 1 層と考え, 1 層，2 層，3 層での実験を行った.また，用いる CNN について図に示す．畳み込み層において畳み込みという処理を行う際に用いられるのがフィルタと呼ばれるもので，この図の場合はカーネルサイズが $w$ で，フィルタの枚数が $N$ 枚である．ある素子が入力を受ける範囲のことを受容野と呼び，カーネルサイズとも呼ばれる．畳み込み層には異なる特徴を抽出するフィルタが複数用意されている．最終層では全結合層に,プーリング層から出力が結合することによってパターン識別が行われる.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{figure*}[!b]
+%%   \begin{center}
+%%     \includegraphics[scale=0.4]{cnn.eps}
+%%     \caption{畳み込みニューラルネットワークの基本構造}
+%%   \end{center}
+%% \end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[!t]
+    \begin{center}
+      \caption{1 層}
+      \scalebox{1}{
+  \begin{tabular}{|l|c|c|c|} \hline
+    カーネルサイズ & 3×3 & 5×5 & 7×7 \\ \hline
+    & 24 & 24 & 24 \\ \cline{2-4}
+    フィルタ数 & 48 & 48 & 48 \\ \cline{2-4}
+    & 96 & 96 & 96 \\ \hline
+  \end{tabular}}
+  \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[!t]
+  \begin{center}
+  \caption{2 層}
+  \begin{tabular}{|l|c|c|} \hline
+    カーネルサイズ & 3×3　3×3 & 5×5　5×5 \\ \hline
+    & 48　48 & 48　48 \\ \cline{2-3}
+    フィルタ数 & 48　96 & 48　96  \\ \cline{2-3}
+    & 96　96 & 96　96 \\ \hline
+  \end{tabular}
+  \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[!t]
+  \begin{center}
+  \caption{3 層}
+  \begin{tabular}{|l|c|} \hline
+    カーネルサイズ & 3×3　3×3　3×3 \\ \hline
+    & 48　48　48 \\ \cline{2-2}
+    フィルタ数 & 48　96　96 \\ \hline
+  \end{tabular}
+  \end{center}
+  \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+それぞれの層数におけるカーネルサイズとフィルタ数の関係を表に示す．ただしこれらは，BAUM-1 と JAFEE 両方に共通する場合のみで，JAFEE について追加で行った分のカーネルサイズとフィルタ数の関係については，表に示す．
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[!t]
+  \begin{center}
+  \caption{2 層追加分}
+  \begin{tabular}{|l|c|c|} \hline
+    カーネルサイズ & 3×3　3×3 & 5×5　5×5 \\ \hline
+    & 12　24 & 12　24 \\ \cline{2-3}
+    & 12　48 & 12　48 \\ \cline{2-3}
+    フィルタ数 & 12　96 & 12　96  \\ \cline{2-3}
+    & 24　48 & 24　48 \\ \cline{2-3}
+    & 24　96 & 24　96 \\ \hline
+  \end{tabular}
+  \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[!t]
+  \begin{center}
+  \caption{3 層追加分}
+  \begin{tabular}{|l|c|} \hline
+    カーネルサイズ & 3×3　3×3　3×3 \\ \hline
+    & 12　48　48 \\ \cline{2-2}
+    フィルタ数 & 12　96　96 \\ \cline{2-2}
+    & 24　48　48 \\ \cline{2-2}
+    & 24　96　96 \\ \hline
+  \end{tabular}
+  \end{center}
+  \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+例えば,層数が 1 層でカーネルサイズが 3×3 でフィルタ数が 24 の場合は畳み込み層にて画像データに対し 3×3 のフィルタによる畳込み処理を 24 回行い,ゼロパディングを用いてデータのサイズを縮小させないようにするといった操作を行った.また,活性化関数には relu 関数を用いた. 2×2 のフィルタを用いてマックスプーリングにより最大値を出力した.ストライドはフィルタの大きさと同数とした.その後 2  次元配列で与えられた要素を 1 次元配列にし,全結合層に与えた.また最適化関数には Adam を用いており,損失関数には categorical　crossentropy を用いた.
+\subsection{表情認識に用いる表情画像}
+この実験に用いたデータセットは, BAUM-1 と JAFEE の 2 種類で，BAUM-1 は，
+イスタンブールのマルマラ大学が公開しているデータセットで,
+被験者 30 人に様々な画像や動画を見せたときの反応を 10 秒から 20 秒の動画にまとめたものである.
+表情は, Anger , Boredom , Bothered , Concentrating , Contempt , Disgust , Fear , Happiness , Neutral , Sadness , Surprise , Thinking , Unsure の 13 種類である.
+本実験ではこの中から, Bothered , Happiness , Neutral , Sadness の 4 種類の表情を用いて実験を行った.\\
+データセット内の人物画像の例を図に示す.それぞれの人物が示す表情についてはデータセットに付属する excel シートから確認し,訓練データ,検査データを作成した.また,確認に用いた excel データの一部を図 9 に示す.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{figure}[!b]
+%%   \begin{center}
+%%     \includegraphics[width=8cm]{chapter2_008.eps}
+%%   \end{center}
+%% \caption{BAUM-1 の人物画像の例}
+%% \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{figure}[!b]
+%%   \begin{center}
+%%     \includegraphics[width=8.5cm,height=8cm]{chapter2_010.eps}
+%%   \end{center}
+%% \caption{excelシートの例}
+%% \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+JAFEEは, Michael Lyons, Miyuki Kamachi, Jiro Gyoba の 3 人によって提供されている,日本人女性 10 名の Anger, Disgust, Fear, Happiness, Neutral, Sadness, Surprise の 7 種類の表情を撮影したデータセットで 60 人の日本人学生が表情を評価しているものである.データセット内の人物画像の例を図に示す.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{figure}[!b]
+%%   \begin{center}
+%%     \includegraphics[width=8cm]{jafee.eps}
+%%   \end{center}
+%% \caption{JAFEE の人物画像の例}
+%% \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+　これらの人物画像を用いて BAUM-1 の訓練データには各表情男性女性各 3 名ずつ,計 6 名で 3 枚ずつの合計 18 枚, 4 表情合計で 72 枚,角度をランダムに変えたもので 5 倍にして 360 枚分を用いた. JAFEE の訓練データには各表情につきコントラストを変えたものを含めて女性 5 名で 36 枚ずつの合計 180 枚, 4 表情合計で 720 枚,角度をランダムに変えたもので 2 倍にして 1440 枚分を用いた.\\
+　BAUM-1 の検査データには,各表情につき訓練データに用いた人物とは別の男性 2 名と女性 2 名の計 4 名で 4 枚ずつの合計 16 枚,訓練データに用いた人物と同じ男性 3 名女性 3 名の計 6 名で各 1 枚ずつの計 6 枚で,各表情同じ人物と別の人物合わせて 22 枚, 4 表情合計で 88 枚とした. JAFEE の検査データには,各表情につき訓練データに用いた人物と別の女性 2 名で 4 枚ずつの計 8 枚,訓練データに用いた人物と同じ女性 5 名で各 2 枚の計 10 枚で,各表情同じ人物と別の人物合わせて 18 枚, 4 表情合計で 72 枚とした.
+\subsection{実験方法}
+本実験では畳み込みニューラルネットワークを用いて層構造が 1 層, 2 層, 3 層の場合にフィルタ数とカーネルサイズを変更し識別率を調べた.その際に用いる訓練データと検査データは BAUM-1 と JAFEE という 2 つのデータセットから作成した.
+\subsection{結果}
+それぞれの層数のときのカーネルサイズとフィルタ数による各表情においての識別結果を表に示す.ただし,表から表は BAUM-1 の識別結果を示し,表から表は JAFEE の識別結果を示す.その際に JAFEE の識別結果は訓練データと検査データが同じ人物で構成されている場合は, 100 $ \% $ の識別率を示したため訓練データと検査データが別人物で構成されている場合のみの判別結果を表示する.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+  \caption{1 層 3×3 Bothered}
+  \scalebox{0.7}{
+\begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Sadness & Sadness & Sadness \\ \hline
+2 & Sadness & Sadness & Sadness \\ \hline
+3 & Sadness & Sadness & Sadness \\ \hline
+4 & Sadness & Sadness & Sadness \\ \hline
+5 & Bothered & Bothered & Bothered \\ \hline
+6 & Bothered & Bothered & Bothered \\ \hline
+7 & Neutral & Neutral & Neutral \\ \hline
+8 & Sadness & Happiness & Happiness \\ \hline
+9 & Happiness & Happiness & Happiness \\ \hline
+10 & Bothered & Bothered & Bothered \\ \hline
+11 & Neutral & Neutral & Neutral \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Sadness & Bothered & Bothered \\ \hline
+14 & Neutral & Neutral & Bothered \\ \hline
+15 & Sadness & Sadness & Sadness \\ \hline
+16 & Sadness & Sadness & Sadness \\ \hline
+17 & Happiness & Happiness & Happiness \\ \hline
+18 & Happiness & Happiness & Happiness \\ \hline
+19 & Sadness & Sadness & Sadness \\ \hline
+20 & Sadness & Sadness & Sadness \\ \hline
+21 & Bothered & Bothered & Bothered \\ \hline
+22 & Bothered & Bothered & Bothered \\ \hline
+正答数 & 5 & 6 & 7 \\ \hline
+  \end{tabular}}
+      \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 3×3 Happiness}
+  \scalebox{0.7}{
+\begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Happiness & Happiness & Happiness \\ \hline
+2 & Neutral & Neutral & Neutral \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Happiness & Happiness & Happiness \\ \hline
+5 & Neutral & Neutral & Neutral \\ \hline
+6 & Sadness & Sadness & Sadness \\ \hline
+7 & Sadness & Sadness & Sadness \\ \hline
+8 & Happiness & Happiness & Happiness \\ \hline
+9 & Neutral & Happiness & Happiness \\ \hline
+10 & Neutral & Happiness & Bothered \\ \hline
+11 & Sadness & Sadness & Sadness \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Happiness & Happiness & Happiness \\ \hline
+14 & Bothered & Neutral & Neutral \\ \hline
+15 & Happiness & Happiness & Happiness \\ \hline
+16 & Happiness & Happiness & Happiness \\ \hline
+17 & Bothered & Neutral & Neutral \\ \hline
+18 & Sadness & Sadness & Sadness \\ \hline
+19 & Happiness & Happiness & Happiness \\ \hline
+20 & Neutral & Neutral & Neutral \\ \hline
+21 & Happiness & Neutral & Happiness \\ \hline
+22 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 9 & 10 & 10 \\ \hline
+  \end{tabular}}
+    \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 3×3 Neutral}
+  \scalebox{0.7}{
+\begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Neutral & Neutral & Neutral \\ \hline
+2 & Bothered & Bothered & Bothered \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Bothered & Neutral & Neutral \\ \hline
+5 & Bothered & Bothered & Sadness \\ \hline
+6 & Bothered & Neutral & Neutral \\ \hline
+7 & Bothered & Happiness & Bothered \\ \hline
+8 & Bothered & Bothered & Bothered \\ \hline
+9 & Bothered & Neutral & Neutral \\ \hline
+10 & Bothered & Happiness & Neutral \\ \hline
+11 & Neutral & Neutral & Neutral \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Neutral & Neutral & Neutral \\ \hline
+14 & Bothered & Bothered & Bothered \\ \hline
+15 & Bothered & Neutral & Neutral \\ \hline
+16 & Neutral & Neutral & Neutral \\ \hline
+17 & Neutral & Neutral & Neutral \\ \hline
+18 & Bothered & Bothered & Sadness \\ \hline
+19 & Bothered & Bothered & Sadness \\ \hline
+20 & Neutral & Neutral & Neutral \\ \hline
+21 & Bothered & Bothered & Sadness \\ \hline
+22 & Bothered & Bothered & Bothered \\ \hline
+正答数 & 8 & 12 & 13 \\ \hline
+  \end{tabular}}
+    \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 3×3 Sadness}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Bothered &  Bothered & Bothered \\ \hline
+2 & Sadness & Sadness & Sadness \\ \hline
+3 & Bothered & Bothered & Bothered \\ \hline
+4 & Sadness & Sadness & Sadness \\ \hline
+5 & Bothered & Neutral & Neutral \\ \hline
+6 & Happiness & Bothered & Bothered \\ \hline
+7 & Sadness & Sadness & Sadness \\ \hline
+8 & Bothered & Bothered & Bothered \\ \hline
+9 & Happiness & Bothered & Bothered \\ \hline
+10 & Bothered & Neutral & Neutral \\ \hline
+11 & Bothered & Bothered & Bothered \\ \hline
+12 & Bothered & Neutral & Neutral \\ \hline
+13 & Bothered & Neutral & Neutral \\ \hline
+14 & Bothered & Happiness & Bothered \\ \hline
+15 & Bothered & Bothered & Bothered \\ \hline
+16 & Bothered & Bothered & Bothered \\ \hline
+17 & Sadness & Sadness & Sadness \\ \hline
+18 & Happiness & Bothered & Bothered \\ \hline
+19 & Sadness & Sadness & Sadness \\ \hline
+20 & Sadness & Sadness & Sadness \\ \hline
+21 & Bothered & Happiness & Bothered \\ \hline
+22 & Bothered & Bothered & Bothered \\ \hline
+正答数 & 6 & 6 & 6 \\ \hline
+  \end{tabular}}
+    \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 5×5 Bothered}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Sadness & Sadness & Sadness \\ \hline
+2 & Sadness & Sadness & Sadness \\ \hline
+3 & Sadness & Sadness & Sadness \\ \hline
+4 & Sadness & Sadness & Sadness \\ \hline
+5 & Bothered & Bothered & Bothered \\ \hline
+6 & Bothered & Bothered & Bothered \\ \hline
+7 & Neutral & Sadness & Bothered \\ \hline
+8 & Happiness & Neutral & Happiness \\ \hline
+9 & Happiness & Neutral & Happiness \\ \hline
+10 & Bothered & Bothered & Bothered \\ \hline
+11 & Neutral & Sadness & Bothered \\ \hline
+12 & Neutral & Sadness & Bothered \\ \hline
+13 & Bothered & Bothered & Bothered \\ \hline
+14 & Neutral & Sadness & Bothered \\ \hline
+15 & Sadness & Sadness & Sadness \\ \hline
+16 & Sadness & Sadness & Sadness \\ \hline
+17 & Happiness & Happiness & Happiness \\ \hline
+18 & Happiness & Happiness & Happiness \\ \hline
+19 & Sadness & Bothered & Sadness \\ \hline
+20 & Sadness & Bothered & Neutral \\ \hline
+21 & Bothered & Sadness & Bothered \\ \hline
+22 & Bothered & Happiness & Bothered \\ \hline
+正答数 & 6 & 6 & 10 \\ \hline
+  \end{tabular}}
+    \end{center}
+\end{table}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 5×5 Happiness}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Neutral & Neutral & Bothered \\ \hline
+2 & Neutral & Sadness & Bothered \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Neutral & Neutral & Happiness \\ \hline
+5 & Neutral & Neutral & Neutral \\ \hline
+6 & Sadness & Sadness & Sadness \\ \hline
+7 & Sadness & Sadness & Sadness \\ \hline
+8 & Neutral & Neutral & Neutral \\ \hline
+9 & Happiness & Neutral & Happiness \\ \hline
+10 & Neutral & Sadness & Happiness \\ \hline
+11 & Sadness & Sadness & Sadness \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Happiness & Happiness & Happiness \\ \hline
+14 & Neutral & Neutral & Bothered \\ \hline
+15 & Happiness & Happiness & Happiness \\ \hline
+16 & Happiness & Happiness & Happiness \\ \hline
+17 & Neutral & Neutral & Neutral \\ \hline
+18 & Sadness & Sadness & Sadness \\ \hline
+19 & Happiness & Happiness & Happiness \\ \hline
+20 & Neutral & Neutral & Neutral \\ \hline
+21 & Neutral & Neutral & Neutral \\ \hline
+22 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 6 & 5 & 8 \\ \hline
+  \end{tabular}}
+    \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 5×5 Neutral}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Sadness & Sadness & Sadness \\ \hline
+2 & Bothered & Sadness & Bothered \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Bothered & Neutral & Bothered \\ \hline
+5 & Bothered & Sadness & Sadness \\ \hline
+6 & Sadness & Sadness & Neutral \\ \hline
+7 & Bothered & Neutral & Bothered \\ \hline
+8 & Neutral & Sadness & Bothered \\ \hline
+9 & Bothered & Neutral & Bothered \\ \hline
+10 & Bothered & Neutral & Bothered \\ \hline
+11 & Neutral & Neutral & Neutral \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Neutral & Neutral & Neutral \\ \hline
+14 & Bothered & Sadness & Bothered \\ \hline
+15 & Neutral & Sadness & Neutral \\ \hline
+16 & Neutral & Neutral & Neutral \\ \hline
+17 & Neutral & Neutral & Neutral \\ \hline
+18 & Neutral & Sadness & Sadness \\ \hline
+19 & Sadness & Sadness & Sadness \\ \hline
+20 & Sadness & Sadness & Sadness \\ \hline
+21 & Bothered & Sadness & Bothered \\ \hline
+22 & Bothered & Sadness & Bothered \\ \hline
+正答数 & 9 & 10 & 8 \\ \hline
+  \end{tabular}}
+    \end{center}
+\end{table}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 5×5 Sadness}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Bothered & Bothered & Bothered \\ \hline
+2 & Sadness & Sadness & Sadness \\ \hline
+3 & Neutral & Sadness & Happiness \\ \hline
+4 & Sadness & Sadness & Sadness \\ \hline
+5 & Neutral & Neutral & Neutral \\ \hline
+6 & Bothered & Bothered & Bothered \\ \hline
+7 & Sadness & Sadness & Sadness \\ \hline
+8 & Sadness & Sadness & Bothered \\ \hline
+9 & Bothered & Bothered & Bothered \\ \hline
+10 & Neutral & Neutral & Neutral \\ \hline
+11 & Sadness & Sadness & Bothered \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Neutral & Neutral & Neutral \\ \hline
+14 & Neutral & Sadness & Happiness \\ \hline
+15 & Bothered & Bothered & Bothered \\ \hline
+16 & Bothered & Sadness & Bothered \\ \hline
+17 & Sadness & Sadness & Sadness \\ \hline
+18 & Bothered & Bothered & Bothered \\ \hline
+19 & Sadness & Sadness & Sadness \\ \hline
+20 & Sadness & Sadness & Sadness \\ \hline
+21 & Bothered & Bothered & Bothered \\ \hline
+22 & Sadness & Sadness & Sadness \\ \hline
+正答数 & 9 & 12 & 7 \\ \hline
+  \end{tabular}}
+    \end{center}
+  \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 7×7 Bothered}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Sadness & Bothered & Sadness \\ \hline
+2 & Sadness & Neutral & Sadness \\ \hline
+3 & Sadness & Sadness & Sadness \\ \hline
+4 & Sadness & Sadness & Sadness \\ \hline
+5 & Bothered & Bothered & Bothered \\ \hline
+6 & Bothered & Bothered & Bothered \\ \hline
+7 & Neutral & Neutral & Neutral \\ \hline
+8 & Happiness & Neutral & Happiness \\ \hline
+9 & Happiness & Neutral & Happiness \\ \hline
+10 & Bothered & Bothered & Bothered \\ \hline
+11 & Neutral & Neutral & Neutral \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Bothered & Bothered & Bothered \\ \hline
+14 & Neutral & Neutral & Neutral \\ \hline
+15 & Neutral & Neutral & Sadness \\ \hline
+16 & Neutral & Neutral & Sadness \\ \hline
+17 & Happiness & Neutral & Happiness \\ \hline
+18 & Happiness & Neutral & Happiness \\ \hline
+19 & Sadness & Sadness & Sadness \\ \hline
+20 & Neutral & Neutral & Sadness \\ \hline
+21 & Bothered & Bothered & Bothered \\ \hline
+22 & Bothered & Bothered & Bothered \\ \hline
+正答数 & 6 & 7 & 6 \\ \hline
+  \end{tabular}}
+    \end{center}
+  \end{table}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 7×7 Happiness}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Neutral & Bothered & Happiness \\ \hline
+2 & Neutral & Neutral & Happiness \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Neutral & Bothered & Happiness \\ \hline
+5 & Neutral & Neutral & Neutral \\ \hline
+6 & Sadness & Happiness & Sadness \\ \hline
+7 & Neutral & Neutral & Sadness \\ \hline
+8 & Neutral & Neutral & Happiness \\ \hline
+9 & Happiness & Happiness & Happiness \\ \hline
+10 & Bothered & Bothered & Happiness \\ \hline
+11 & Sadness & Sadness & Sadness \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Happiness & Happiness & Happiness \\ \hline
+14 & Bothered & Neutral & Neutral \\ \hline
+15 & Happiness & Happiness & Happiness \\ \hline
+16 & Happiness & Happiness & Happiness \\ \hline
+17 & Bothered & Neutral & Neutral \\ \hline
+18 & Sadness & Sadness & Sadness \\ \hline
+19 & Happiness & Happiness & Happiness \\ \hline
+20 & Neutral & Neutral & Neutral \\ \hline
+21 & Neutral & Neutral & Happiness \\ \hline
+22 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 6 & 7 & 12 \\ \hline
+  \end{tabular}}
+    \end{center}
+  \end{table}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 7×7 Neutral}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Sadness & Bothered & Sadness \\ \hline
+2 & Sadness & Neutral & Neutral \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Bothered & Bothered & Happiness \\ \hline
+5 & Bothered & Neutral & Neutral \\ \hline
+6 & Neutral & Happiness & Neutral \\ \hline
+7 & Bothered & Neutral & Happiness \\ \hline
+8 & Sadness & Neutral & Neutral \\ \hline
+9 & Bothered & Happiness & Happiness \\ \hline
+10 & Bothered & Bothered & Happiness \\ \hline
+11 & Neutral & Sadness & Neutral \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Neutral & Happiness & Neutral \\ \hline
+14 & Sadness & Neutral & Neutral \\ \hline
+15 & Sadness & Happiness & Neutral \\ \hline
+16 & Neutral & Happiness & Neutral \\ \hline
+17 & Neutral & Neutral & Neutral \\ \hline
+18 & Neutral & Sadness & Neutral \\ \hline
+19 & Sadness & Happiness & Neutral \\ \hline
+20 & Sadness & Neutral & Sadness \\ \hline
+21 & Neutral & Neutral & Neutral \\ \hline
+22 & Bothered & Happiness & Neutral \\ \hline
+正答数 & 9 & 10 & 16 \\ \hline
+  \end{tabular}}
+    \end{center}
+  \end{table}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{table}
+      \begin{center}
+  \caption{1 層 7×7 Sadness}
+  \scalebox{0.7}{
+    \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Sadness & Sadness & Bothered \\ \hline
+2 & Sadness & Sadness & Sadness \\ \hline
+3 & Bothered & Bothered & Happiness \\ \hline
+4 & Sadness & Sadness & Sadness \\ \hline
+5 & Neutral & Neutral & Neutral \\ \hline
+6 & Bothered & Bothered & Bothered \\ \hline
+7 & Sadness & Sadness & Sadness \\ \hline
+8 & Sadness & Sadness & Happiness \\ \hline
+9 & Bothered & Bothered & Happiness \\ \hline
+10 & Neutral & Neutral & Neutral \\ \hline
+11 & Sadness & Sadness & Happiness \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Neutral & Neutral & Neutral \\ \hline
+14 & Bothered & Bothered & Happiness \\ \hline
+15 & Bothered & Bothered & Bothered \\ \hline
+16 & Bothered & Bothered & Happiness \\ \hline
+17 & Sadness & Sadness & Sadness \\ \hline
+18 & Bothered & Bothered & Bothered \\ \hline
+19 & Sadness & Sadness & Sadness \\ \hline
+20 & Sadness & Sadness & Sadness \\ \hline
+21 & Bothered & Bothered & Happiness \\ \hline
+22 & Sadness & Sadness & Happiness \\ \hline
+正答数 & 10 & 10 & 6 \\ \hline
+  \end{tabular}}
+    \end{center}
+  \end{table}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{2 層 3×3 Bothered}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 48　48 & 48　96 & 96　96 \\ \hline
+1 & Bothered & Bothered & Bothered \\ \hline
+2 & Sadness & Sadness & Neutral \\ \hline
+3 & Bothered & Sadness & Bothered \\ \hline
+4 & Bothered & Sadness & Bothered \\ \hline
+5 & Bothered & Bothered & Bothered \\ \hline
+6 & Bothered & Bothered & Happiness \\ \hline
+7 & Bothered & Bothered & Happiness \\ \hline
+8 & Happiness & Happiness & Happiness \\ \hline
+9 & Happiness & Happiness & Happiness \\ \hline
+10 & Bothered & Bothered & Bothered \\ \hline
+11 & Bothered & Bothered & Happiness \\ \hline
+12 & Bothered & Bothered & Happiness \\ \hline
+13 & Sadness & Sadness & Bothered \\ \hline
+14 & Bothered & Bothered & Happiness \\ \hline
+15 & Sadness & Sadness & Happiness \\ \hline
+16 & Sadness & Sadness & Happiness \\ \hline
+17 & Happiness & Happiness & Happiness \\ \hline
+18 & Happiness & Happiness & Happiness \\ \hline
+19 & Sadness & Sadness & Bothered \\ \hline
+20 & Sadness & Sadness & Neutral \\ \hline
+21 & Bothered & Bothered & Happiness \\ \hline
+22 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 11 & 9 & 7 \\ \hline
+ \end{tabular}}
+ \end{center}
+ \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{2 層 3×3 Happiness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 48　48 & 48　96 & 96　96 \\ \hline
+1 & Happiness & Happiness & Bothered \\ \hline
+2 & Happiness & Happiness & Bothered \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Happiness & Happiness & Happiness \\ \hline
+5 & Neutral & Neutral & Neutral \\ \hline
+6 & Sadness & Sadness & Happiness \\ \hline
+7 & Sadness & Neutral & Happiness \\ \hline
+8 & Happiness & Happiness & Bothered \\ \hline
+9 & Neutral & Happiness & Happiness \\ \hline
+10 & Happiness & Happiness & Bothered \\ \hline
+11 & Sadness & Sadness & Happiness \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Happiness & Happiness & Happiness \\ \hline
+14 & Happiness & Happiness & Bothered \\ \hline
+15 & Happiness & Happiness & Happiness \\ \hline
+16 & Happiness & Happiness & Happiness \\ \hline
+17 & Happiness & Happiness & Bothered \\ \hline
+18 & Sadness & Sadness & Happiness \\ \hline
+19 & Happiness & Happiness & Happiness \\ \hline
+20 & Neutral & Neutral & Happiness \\ \hline
+21 & Happiness & Happiness & Bothered \\ \hline
+22 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 13 & 14 & 12 \\ \hline
+ \end{tabular}}
+ \end{center}
+ \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{2 層 3×3 Neutral}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 48　48 & 48　96 & 96　96 \\ \hline
+1 & Sadness & Neutral & Happiness \\ \hline
+2 & Bothered & Bothered & Bothered \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Happiness & Happiness & Bothered \\ \hline
+5 & Bothered & Bothered & Happiness \\ \hline
+6 & Bothered & Bothered & Sadness \\ \hline
+7 & Happiness & Happiness & Bothered \\ \hline
+8 & Bothered & Bothered & Happiness \\ \hline
+9 & Happiness & Happiness & Bothered \\ \hline
+10 & Happiness & Happiness & Bothered \\ \hline
+11 & Neutral & Neutral & Neutral \\ \hline
+12 & Neutral & Neutral & Neutral \\ \hline
+13 & Neutral & Happiness & Neutral \\ \hline
+14 & Bothered & Bothered & Happiness \\ \hline
+15 & Bothered & Bothered & Happiness \\ \hline
+16 & Neutral & Neutral & Neutral \\ \hline
+17 & Neutral & Neutral & Neutral \\ \hline
+18 & Bothered & Bothered & Happiness \\ \hline
+19 & Bothered & Bothered & Happiness \\ \hline
+20 & Sadness & Neutral & Happiness \\ \hline
+21 & Bothered & Bothered & Happiness \\ \hline
+22 & Bothered & Bothered & Bothered \\ \hline
+正答数 & 6 & 7 & 6 \\ \hline
+ \end{tabular}}
+ \end{center}
+ \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{2 層 3×3 Sadness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 48　48 & 48　96 & 96　96 \\ \hline
+1 & Bothered & Bothered & Bothered \\ \hline
+2 & Sadness & Sadness & Sadness \\ \hline
+3 & Bothered & Bothered & Happiness \\ \hline
+4 & Sadness & Sadness & Sadness \\ \hline
+5 & Bothered & Bothered & Happiness \\ \hline
+6 & Happiness & Happiness & Bothered \\ \hline
+7 & Happiness & Happiness & Sadness \\ \hline
+8 & Bothered & Bothered & Bothered \\ \hline
+9 & Happiness & Happiness & Bothered \\ \hline
+10 & Bothered & Bothered & Happiness \\ \hline
+11 & Bothered & Bothered & Bothered \\ \hline
+12 & Bothered & Bothered & Happiness \\ \hline
+13 & Bothered & Bothered & Happiness \\ \hline
+14 & Bothered & Bothered & Happiness \\ \hline
+15 & Happiness & Happiness & Bothered \\ \hline
+16 & Bothered & Bothered & Happiness \\ \hline
+17 & Sadness & Sadness & Sadness \\ \hline
+18 & Happiness & Happiness & Happiness \\ \hline
+19 & Sadness & Sadness & Sadness \\ \hline
+20 & Sadness & Sadness & Sadness \\ \hline
+21 & Happiness & Happiness & Happiness \\ \hline
+22 & Bothered & Bothered & Bothered \\ \hline
+正答数 & 5 & 5 & 6 \\ \hline
+ \end{tabular}}
+ \end{center}
+ \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{2 層 5×5 Bothered}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 48　48 & 48　96 & 96　96 \\ \hline
+1 & Bothered & Neutral & Bothered \\ \hline
+2 & Sadness & Happiness & Happiness \\ \hline
+3 & Bothered & Neutral & Sadness \\ \hline
+4 & Bothered & Neutral & Bothered \\ \hline
+5 & Bothered & Bothered & Bothered \\ \hline
+6 & Happiness & Bothered & Bothered \\ \hline
+7 & Happiness & Bothered & Neutral \\ \hline
+8 & Happiness & Happiness & Neutral \\ \hline
+9 & Happiness & Happiness & Neutral \\ \hline
+10 & Bothered & Bothered & Bothered \\ \hline
+11 & Happiness & Bothered & Neutral \\ \hline
+12 & Bothered & Bothered & Neutral \\ \hline
+13 & Bothered & Bothered & Bothered \\ \hline
+14 & Happiness & Bothered & Neutral \\ \hline
+15 & Happiness & Happiness & Happiness \\ \hline
+16 & Happiness & Happiness & Happiness \\ \hline
+17 & Happiness & Happiness & Neutral \\ \hline
+18 & Happiness & Happiness & Neutral \\ \hline
+19 & Bothered & Neutral & Bothered \\ \hline
+20 & Sadness & Happiness & Happiness \\ \hline
+21 & Happiness & Bothered & Bothered \\ \hline
+22 & Happiness & Bothered & Bothered \\ \hline
+正答数 & 8 & 10 & 9 \\ \hline
+ \end{tabular}}
+ \end{center}
+ \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{2 層 5×5 Happiness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 48　48 & 48　96 & 96　96 \\ \hline
+1 & Bothered & Neutral & Bothered \\ \hline
+2 & Neutral & Bothered & Neutral \\ \hline
+3 & Neutral & Bothered & Neutral \\ \hline
+4 & Bothered & Neutral & Bothered \\ \hline
+5 & Neutral & Bothered & Neutral \\ \hline
+6 & Happiness & Neutral & Sadness \\ \hline
+7 & Happiness & Neutral & Sadness \\ \hline
+8 & Neutral & Neutral & Sadness \\ \hline
+9 & Happiness & Bothered & Happiness \\ \hline
+10 & Bothered & Bothered & Bothered \\ \hline
+11 & Happiness & Neutral & Sadness \\ \hline
+12 & Neutral & Bothered & Neutral \\ \hline
+13 & Happiness & Happiness & Sadness \\ \hline
+14 & Bothered & Neutral & Bothered \\ \hline
+15 & Happiness & Happiness & Happiness \\ \hline
+16 & Happiness & Bothered & Happiness \\ \hline
+17 & Sadness & Neutral & Bothered \\ \hline
+18 & Happiness & Neutral & Sadness \\ \hline
+19 & Happiness & Happiness & Happiness \\ \hline
+20 & Neutral & Bothered & Neutral \\ \hline
+21 & Bothered & Neutral & Sadness \\ \hline
+22 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 9 & 4 & 5 \\ \hline
+ \end{tabular}}
+ \end{center}
+ \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{2 層 5×5 Neutral}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 48　48 & 48　96 & 96　96 \\ \hline
+1 & Happiness & Happiness & Sadness \\ \hline
+2 & Happiness & Neutral & Bothered \\ \hline
+3 & Neutral & Neutral & Neutral \\ \hline
+4 & Happiness & Happiness & Bothered \\ \hline
+5 & Happiness & Bothered & Sadness \\ \hline
+6 & Sadness & Sadness & Sadness \\ \hline
+7 & Happiness & Happiness & Bothered \\ \hline
+8 & Happiness & Happiness & Sadness \\ \hline
+9 & Happiness & Happiness & Bothered \\ \hline
+10 & Happiness & Happiness & Bothered \\ \hline
+11 & Neutral & Neutral & Neutral \\ \hline
+12 & Happiness & Happiness & Sadness \\ \hline
+13 & Happiness & Bothered & Neutral \\ \hline
+14 & Happiness & Neutral & Happiness \\ \hline
+15 & Sadness & Sadness & Sadness \\ \hline
+16 & Bothered & Neutral & Neutral \\ \hline
+17 & Neutral & Neutral & Neutral \\ \hline
+18 & Happiness & Happiness & Happiness \\ \hline
+19 & Happiness & Happiness & Sadness \\ \hline
+20 & Happiness & Happiness & Sadness \\ \hline
+21 & Happiness & Happiness & Neutral \\ \hline
+22 & Bothered & Neutral & Bothered \\ \hline
+正答数 & 3 & 7 & 6 \\ \hline
+ \end{tabular}}
+ \end{center}
+ \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{2 層 5×5 Sadness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 48　48 & 48　96 & 96　96 \\ \hline
+1 & Happiness & Happiness & Sadness \\ \hline
+2 & Sadness & Bothered & Sadness \\ \hline
+3 & Happiness & Happiness & Bothered \\ \hline
+4 & Sadness & Sadness & Sadness \\ \hline
+5 & Neutral & Bothered & Neutral \\ \hline
+6 & Happiness & Neutral & Bothered \\ \hline
+7 & Sadness & Neutral & Sadness \\ \hline
+8 & Happiness & Happiness & Sadness \\ \hline
+9 & Happiness & Neutral & Bothered \\ \hline
+10 & Happiness & Bothered & Neutral \\ \hline
+11 & Sadness & Happiness & Sadness \\ \hline
+12 & Happiness & Neutral & Neutral \\ \hline
+13 & Happiness & Neutral & Neutral \\ \hline
+14 & Happiness & Happiness & Bothered \\ \hline
+15 & Happiness & Neutral & Bothered \\ \hline
+16 & Happiness & Happiness & Bothered \\ \hline
+17 & Happiness & Happiness & Sadness \\ \hline
+18 & Happiness & Neutral & Bothered \\ \hline
+19 & Happiness & Sadness & Sadness \\ \hline
+20 & Bothered & Sadness & Sadness \\ \hline
+21 & Happiness & Happiness & Bothered \\ \hline
+22 & Sadness & Happiness & Sadness \\ \hline
+正答数 & 5 & 3 & 10 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{3 層 3×3 Bothered}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|} \hline
+ & 48 48 48 & 48 96 96 \\ \hline
+1 & Neutral & Neutral \\ \hline
+2 & Sadness & Sadness \\ \hline
+3 & Neutral & Neutral \\ \hline
+4 & Neutral & Bothered \\ \hline
+5 & Bothered & Bothered \\ \hline
+6 & Sadness & Sadness \\ \hline
+7 & Bothered & Bothered \\ \hline
+8 & Neutral & Neutral \\ \hline
+9 & Neutral & Sadness \\ \hline
+10 & Sadness & Sadness \\ \hline
+11 & Neutral & Sadness \\ \hline
+12 & Neutral & Neutral \\ \hline
+13 & Neutral & Sadness \\ \hline
+14 & Neutral & Sadness \\ \hline
+15 & Neutral & Sadness \\ \hline
+16 & Neutral & Sadness \\ \hline
+17 & Happiness & Happiness \\ \hline
+18 & Sadness & Sadness \\ \hline
+19 & Bothered & Bothered \\ \hline
+20 & Neutral & Bothered \\ \hline
+21 & Neutral & Neutral \\ \hline
+22 & Neutral & Neutral \\ \hline
+正答数 & 3 & 5 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{3 層 3×3 Happiness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|} \hline
+& 48 48 48 & 48 96 96 \\ \hline
+1 & Happiness & Sadness \\ \hline
+2 & Happiness & Neutral \\ \hline
+3 & Neutral & Neutral \\ \hline
+4 & Happiness & Neutral \\ \hline
+5 & Sadness & Sadness \\ \hline
+6 & Happiness & Neutral \\ \hline
+7 & Sadness & Sadness \\ \hline
+8 & Neutral & Neutral \\ \hline
+9 & Neutral & Neutral \\ \hline
+10 & Neutral & Neutral \\ \hline
+11 & Happiness & Neutral \\ \hline
+12 & Happiness & Happiness \\ \hline
+13 & Happiness & Neutral \\ \hline
+14 & Sadness & Sadness \\ \hline
+15 & Sadness & Sadness \\ \hline
+16 & Happiness & Sadness \\ \hline
+17 & Happiness & Happiness \\ \hline
+18 & Neutral & Neutral \\ \hline
+19 & Neutral & Neutral \\ \hline
+20 & Neutral & Neutral \\ \hline
+21 & Happiness & Sadness \\ \hline
+22 & Happiness & Sadness \\ \hline
+正答数 & 11 & 2 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{3 層 3×3 Neutral}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|} \hline
+ & 48 48 48 & 48 96 96 \\ \hline
+1 & Neutral & Neutral \\ \hline
+2 & Bothered & Bothered \\ \hline
+3 & Sadness & Sadness \\ \hline
+4 & Neutral & Neutral \\ \hline
+5 & Sadness & Sadness \\ \hline
+6 & Bothered & Bothered \\ \hline
+7 & Neutral & Neutral \\ \hline
+8 & Neutral & Neutral \\ \hline
+9 & Sadness & Sadness \\ \hline
+10 & Neutral & Neutral \\ \hline
+11 & Neutral & Neutral \\ \hline
+12 & Sadness & Sadness \\ \hline
+13 & Neutral & Neutral \\ \hline
+14 & Neutral & Neutral \\ \hline
+15 & Neutral & Neutral \\ \hline
+16 & Sadness & Sadness \\ \hline
+17 & Neutral & Neutral \\ \hline
+18 & Neutral & Neutral \\ \hline
+19 & Bothered & Bothered \\ \hline
+20 & Neutral & Neutral \\ \hline
+21 & Bothered & Bothered \\ \hline
+22 & Neutral & Neutral \\ \hline
+正答数 & 9 & 9 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{3 層 3×3 Sadness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|} \hline
+ & 48 48 48 & 48 96 96 \\ \hline
+1 & Neutral & Neutral \\ \hline
+2 & Neutral & Neutral \\ \hline
+3 & Sadness & Sadness \\ \hline
+4 & Neutral & Neutral \\ \hline
+5 & Neutral & Neutral \\ \hline
+6 & Neutral & Neutral \\ \hline
+7 & Sadness & Sadness \\ \hline
+8 & Sadness & Sadness \\ \hline
+9 & Happiness & Happiness \\ \hline
+10 & Neutral & Neutral \\ \hline
+11 & Bothered & Bothered \\ \hline
+12 & Bothered & Bothered \\ \hline
+13 & Neutral & Neutral \\ \hline
+14 & Neutral & Neutral \\ \hline
+15 & Sadness & Sadness \\ \hline
+16 & Bothered & Bothered \\ \hline
+17 & Neutral & Neutral \\ \hline
+18 & Bothered & Bothered \\ \hline
+19 & Bothered & Bothered \\ \hline
+20 & Neutral & Neutral \\ \hline
+21 & Sadness & Sadness \\ \hline
+22 & Sadness & Sadness \\ \hline
+正答数 & 6 & 6 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{1 層 3×3 Anger}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Anger & Anger & Anger \\ \hline
+2 & Sadness & Sadness & Happiness \\ \hline
+3 & Sadness & Sadness & Happiness \\ \hline
+4 & Sadness & Sadness & Happiness \\ \hline
+5 & Anger & Anger & Anger \\ \hline
+6 & Sadness & Sadness & Happiness \\ \hline
+7 & Anger & Anger & Anger \\ \hline
+8 & Anger & Anger & Anger \\ \hline
+正答数 & 4 & 4 & 4 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{1 層 3×3 Happiness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Happiness & Happiness & Happiness \\ \hline
+2 & Happiness & Happiness & Happiness \\ \hline
+3 & Happiness & Happiness & Happiness \\ \hline
+4 & Happiness & Happiness & Happiness \\ \hline
+5 & Happiness & Happiness & Happiness \\ \hline
+6 & Happiness & Happiness & Happiness \\ \hline
+7 & Happiness & Happiness & Happiness \\ \hline
+8 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 8 & 8 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{1 層 3×3 Sadness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Surprise & Surprise & Surprise \\ \hline
+2 & Surprise & Surprise & Surprise \\ \hline
+3 & Surprise & Surprise & Surprise \\ \hline
+4 & Surprise & Surprise & Surprise \\ \hline
+5 & Surprise & Surprise & Surprise \\ \hline
+6 & Surprise & Surprise & Surprise \\ \hline
+7 & Surprise & Surprise & Surprise \\ \hline
+8 & Surprise & Surprise & Surprise \\ \hline
+正答数 & 0 & 0 & 0 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{1 層 3×3 Surprise}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Happiness & Surprise & Surprise \\ \hline
+2 & Anger & Surprise & Surprise \\ \hline
+3 & Happiness & Surprise & Surprise \\ \hline
+4 & Anger & Happiness & Sadness \\ \hline
+5 & Surprise & Surprise & Surprise \\ \hline
+6 & Anger & Happiness & Surprise \\ \hline
+7 & Anger & Happiness & Surprise \\ \hline
+8 & Surprise & Happiness & Surprise \\ \hline
+正答数 & 2 & 4 & 7 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{1 層 5×5 Anger}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Anger & Anger & Anger \\ \hline
+2 & Happiness & Happiness & Happiness \\ \hline
+3 & Happiness & Happiness & Happiness \\ \hline
+4 & Happiness & Happiness & Happiness \\ \hline
+5 & Anger & Anger & Anger \\ \hline
+6 & Happiness & Happiness & Happiness \\ \hline
+7 & Anger & Anger & Anger \\ \hline
+8 & Anger & Anger & Anger \\ \hline
+正答数 & 4 & 4 & 4 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{1 層 5×5 Happiness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Happiness & Happiness & Happiness \\ \hline
+2 & Happiness & Happiness & Happiness \\ \hline
+3 & Happiness & Happiness & Happiness \\ \hline
+4 & Happiness & Happiness & Happiness \\ \hline
+5 & Happiness & Happiness & Happiness \\ \hline
+6 & Happiness & Happiness & Happiness \\ \hline
+7 & Happiness & Happiness & Happiness \\ \hline
+8 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 8 & 8 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{1 層 5×5 Sadness}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Surprise & Happiness & Happiness \\ \hline
+2 & Happiness & Sadness & Happiness \\ \hline
+3 & Surprise & Happiness & Surprise \\ \hline
+4 & Surprise & Happiness & Surprise \\ \hline
+5 & Happiness & Sadness & Happiness \\ \hline
+6 & Happiness & Anger & Happiness \\ \hline
+7 & Surprise & Happiness & Happiness \\ \hline
+8 & Happiness & Anger & Happiness \\ \hline
+正答数 & 0 & 0 & 0 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \begin{center}
+    \caption{1 層 5×5 Surprise}    
+    \scalebox{0.7}{
+      \begin{tabular}[t]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Anger & Happiness & Surprise \\ \hline
+2 & Happiness & Anger & Surprise \\ \hline
+3 & Anger & Happiness & Happiness \\ \hline
+4 & Happiness & Anger & Happiness \\ \hline
+5 & Anger & Surprise & Surprise \\ \hline
+6 & Happiness & Anger & Happiness \\ \hline
+7 & Happiness & Anger & Happiness \\ \hline
+8 & Anger & Surprise & Surprise \\ \hline
+正答数 & 0 & 2 & 4 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{1 層 7×7 Anger}    
+    \scalebox{0.7}{
+      \begin{tabular}[ht]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Anger & Surprise & Anger \\ \hline
+2 & Happiness & Happiness & Happiness \\ \hline
+3 & Anger & Happiness & Happiness \\ \hline
+4 & Happiness & Surprise & Happiness \\ \hline
+5 & Anger & Happiness & Anger \\ \hline
+6 & Happiness & Happiness & Happiness \\ \hline
+7 & Anger & Anger & Anger \\ \hline
+8 & Anger & Anger & Anger \\ \hline
+正答数 & 5 & 2 & 4 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{1 層 7×7 Happiness}    
+    \scalebox{0.7}{
+      \begin{tabular}[ht]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Happiness & Happiness & Happiness \\ \hline
+2 & Anger & Happiness & Happiness \\ \hline
+3 & Anger & Happiness & Happiness \\ \hline
+4 & Happiness & Happiness & Happiness \\
+5 & Anger & Happiness & Happiness \\ \hline
+6 & Anger & Happiness & Happiness \\ \hline
+7 & Happiness & Happiness & Happiness \\ \hline
+8 & Happiness & Happiness & Happiness \\ \hline
+正答数 & 4 & 8 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{1 層 7×7 Sadness}    
+    \scalebox{0.7}{
+      \begin{tabular}[ht]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Happiness & Happiness & Happiness \\ \hline
+2 & Surprise & Surprise & Happiness \\ \hline
+3 & Happiness & Happiness & Surprise \\ \hline
+4 & Happiness & Happiness & Surprise \\ \hline
+5 & Surprise & Surprise & Happiness \\ \hline
+6 & Surprise & Surprise & Happiness \\ \hline
+7 & Happiness & Happiness & Happiness \\ \hline
+8 & Surprise & Surprise & Happiness \\ \hline
+正答数 & 0 & 0 & 0 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{1 層 7×7 Surprise}    
+    \scalebox{0.7}{
+      \begin{tabular}[ht]{|l|c|c|c|} \hline
+ & 24 & 48 & 96 \\ \hline
+1 & Surprise & Happiness & Happiness \\ \hline
+2 & Happiness & Anger & Surprise \\ \hline
+3 & Happiness & Happiness & Happiness \\ \hline
+4 & Anger & Anger & Surprise \\ \hline
+5 & Surprise & Surprise & Happiness \\ \hline
+6 & Happiness & Anger & Happiness \\ \hline
+7 & Happiness & Anger & Happiness \\ \hline
+8 & Surprise & Surprise & Happiness \\ \hline
+正答数 & 3 & 2 & 2 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{2 層 3×3 Anger}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|c|c|} \hline
+ & 12 24 & 12 48 & 12 96 & 24 48 & 24 96 & 48 48 & 48 96 & 96 96 \\ \hline
+1 & Anger & Anger & Anger & Anger & Anger & Anger & Anger & Anger \\ \hline
+2 & Anger & Anger & Happiness & Anger & Anger & Anger & Anger & Anger \\ \hline
+3 & Anger & Anger & Happiness & Anger & Anger & Anger & Anger & Anger \\ \hline
+4 & Sadness & Anger & Anger & Happiness & Happiness & Happiness & Anger & Anger \\ \hline
+5 & Anger & Anger & Anger & Anger & Anger & Anger & Anger & Anger \\ \hline
+6 & Sadness & Anger & Happiness & Happiness & Happiness & Happiness & Anger & Anger \\ \hline
+7 & Anger & Anger & Anger & Anger & Anger & Anger & Anger & Anger \\ \hline
+8 & Anger & Anger & Anger & Anger & Anger & Anger & Anger & Anger \\ \hline
+正答数 & 6 & 8 & 5 & 6 & 6 & 6 & 8 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{2 層 3×3 Hapiness}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|c|c|} \hline
+ & 12 24 & 12 48 & 12 96 & 24 48 & 24 96 & 48 48 & 48 96 & 96 96 \\ \hline
+1 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+2 & Happiness & Anger & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+3 & Happiness & Anger & Surprise & Anger & Happiness & Happiness & Happiness & Happiness \\ \hline
+4 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+5 & Happiness & Anger & Surprise & Anger & Happiness & Happiness & Happiness & Happiness \\ \hline
+6 & Happiness & Anger & Happiness & Anger & Happiness & Happiness & Happiness & Happiness \\ \hline
+7 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+8 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+正答数 & 8 & 4 & 6 & 5 & 8 & 8 & 8 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{2 層 3×3 Sadness}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|c|c|} \hline
+ & 12 24 & 12 48 & 12 96 & 24 48 & 24 96 & 48 48 & 48 96 & 96 96 \\ \hline
+1 & Anger & Surprise & Anger & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+2 & Happiness & Happiness & Happiness & Sadness & Sadness & Happiness & Happiness & Happiness \\ \hline
+3 & Anger & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+4 & Happiness & Surprise & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+5 & Anger & Happiness & Anger & Sadness & Sadness & Happiness & Happiness & Happiness \\ \hline
+6 & Happiness & Happiness & Happiness & Sadness & Sadness & Happiness & Happiness & Happiness \\ \hline
+7 & Anger & Anger & Anger & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+8 & Anger & Anger & Anger & Sadness & Sadness & Happiness & Happiness & Happiness \\ \hline
+正答数 & 5 & 2 & 4 & 4 & 4 & 0 & 0 & 0 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{2 層 3×3 Surprise}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|c|c|} \hline
+ & 12 24 & 12 48 & 12 96 & 24 48 & 24 96 & 48 48 & 48 96 & 96 96 \\ \hline
+1 & Happiness & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise \\ \hline
+2 & Happiness & Anger & Surprise & Anger & Sadness & Surprise & Surprise & Surprise \\ \hline
+3 & Happiness & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise \\ \hline
+4 & Happiness & Surprise & Surprise & Anger & Anger & Surprise & Surprise & Surprise \\ \hline
+5 & Happiness & Anger & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise \\ \hline
+6 & Happiness & Surprise & Surprise & Anger & Sadness & Surprise & Surprise & Surprise \\ \hline
+7 & Happiness & Anger & Surprise & Sadness & Sadness & Surprise & Surprise & Surprise \\ \hline
+8 & Happiness & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise \\ \hline
+正答数 & 0 & 4 & 8 & 4 & 4 & 8 & 8 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{2 層 5×5 Anger}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|c|c|} \hline
+ & 12 24 & 12 48 & 12 96 & 24 48 & 24 96 & 48 48 & 48 96 & 96 96 \\ \hline
+1 & Anger & Anger & Surprise & Anger & Anger & Anger & Anger & Anger \\ \hline
+2 & Sadness & Sadness & Sadness & Anger & Anger & Sadness & Anger & Happiness \\ \hline
+3 & Sadness & Sadness & Sadness & Anger & Anger & Sadness & Anger & Happiness \\ \hline
+4 & Sadness & Sadness & Sadness & Anger & Anger & Sadness & Anger & Happiness \\ \hline
+5 & Anger & Anger & Surprise & Anger & Anger & Anger & Anger & Anger \\ \hline
+6 & Sadness & Sadness & Sadness & Happiness & Anger & Sadness & Anger & Happiness \\ \hline
+7 & Anger & Anger & Sadness & Anger & Anger & Anger & Anger & Anger \\ \hline
+8 & Anger & Anger & Surprise & Anger & Anger & Anger & Anger & Anger \\ \hline
+正答数 & 4 & 4 & 0 & 7 & 8 & 4 & 8 & 4 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{2 層 5×5 Happiness}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|c|c|} \hline
+ & 12 24 & 12 48 & 12 96 & 24 48 & 24 96 & 48 48 & 48 96 & 96 96 \\ \hline
+1 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+2 & Happiness & Happiness & Happiness & Anger & Happiness & Happiness & Happiness & Happiness \\ \hline
+3 & Happiness & Happiness & Happiness & Anger & Happiness & Happiness & Happiness & Happiness \\ \hline
+4 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+5 & Happiness & Happiness & Happiness & Anger & Happiness & Happiness & Happiness & Happiness \\ \hline
+6 & Happiness & Happiness & Happiness & Anger & Happiness & Happiness & Happiness & Happiness \\ \hline
+7 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+8 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+正答数 & 8 & 8 & 8 & 4 & 8 & 8 & 8 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{2 層 5×5 Sadness}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|c|c|} \hline
+ & 12 24 & 12 48 & 12 96 & 24 48 & 24 96 & 48 48 & 48 96 & 96 96 \\ \hline
+1 & Surprise & Happiness & Sadness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+2 & Happiness & Surprise & Happiness & Sadness & Happiness & Happiness & Happiness & Sadness \\ \hline
+3 & Happiness & Happiness & Sadness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+4 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+5 & Surprise & Surprise & Surprise & Anger & Happiness & Happiness & Happiness & Sadness \\ \hline
+6 & Surprise & Surprise & Happiness & Anger & Happiness & Happiness & Happiness & Surprise \\ \hline
+7 & Happiness & Happiness & Sadness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+8 & Happiness & Surprise & Happiness & Sadness & Happiness & Happiness & Happiness & Surprise \\ \hline
+正答数 & 0 & 0 & 3 & 2 & 0 & 0 & 0 & 2 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{2 層 5×5 Surprise}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|c|c|} \hline
+ & 12 24 & 12 48 & 12 96 & 24 48 & 24 96 & 48 48 & 48 96 & 96 96 \\ \hline
+1 & Happiness & Surprise & Surprise & Surprise & Happiness & Happiness & Happiness & Surprise \\ \hline
+2 & Surprise & Surprise & Surprise & Anger & Surprise & Surprise & Happiness & Surprise \\ \hline
+3 & Happiness & Surprise & Surprise & Surprise & Happiness & Happiness & Happiness & Surprise \\ \hline
+4 & Surprise & Surprise & Anger & Anger & Happiness & Surprise & Happiness & Surprise \\ \hline
+5 & Happiness & Surprise & Surprise & Surprise & Happiness & Happiness & Happiness & Surprise \\ \hline
+6 & Surprise & Surprise & Surprise & Anger & Surprise & Surprise & Happiness & Surprise \\ \hline
+7 & Surprise & Surprise & Surprise & Anger & Surprise & Surprise & Happiness & Surprise \\ \hline
+8 & Surprise & Surprise & Surprise & Surprise & Happiness & Happiness & Happiness & Surprise \\ \hline
+正答数 & 5 & 8 & 7 & 4 & 3 & 4 & 0 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{3 層 3×3 Anger}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|} \hline
+ & 12 48 48 & 12 96 96 & 24 48 48 & 24 96 96 & 48 48 48 & 48 96 96 \\ \hline
+1 & Anger & Anger & Anger & Anger & Surprise & Anger \\ \hline
+2 & Anger & Anger & Happiness & Anger & Happiness & Sadness \\ \hline
+3 & Anger & Anger & Happiness & Anger & Anger & Anger \\ \hline
+4 & Anger & Sadness & Happiness & Sadness & Anger & Anger \\ \hline
+5 & Anger & Anger & Anger & Anger & Surprise & Surprise \\ \hline
+6 & Anger & Sadness & Happiness & Sadness & Happiness & Sadness \\ \hline
+7 & Anger & Anger & Anger & Anger & Surprise & Anger \\ \hline
+8 & Anger & Anger & Anger & Anger & Surprise & Anger \\ \hline
+正答数 & 8 & 6 & 4 & 6 & 2 & 5 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{3 層 3×3 Happiness}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|} \hline
+ & 12 48 48 & 12 96 96 & 24 48 48 & 24 96 96 & 48 48 48 & 48 96 96 \\ \hline
+1 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+2 & Anger & Surprise & surprise & Happiness & Anger & Surprise \\ \hline
+3 & Anger & Happiness & Happiness & Happiness & Anger & Happiness \\ \hline
+4 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+5 & Anger & Happiness & Happiness & Happiness & Anger & Anger \\ \hline
+6 & Anger & Surprise & Surprise & Happiness & Anger & Anger \\ \hline
+7 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+8 & Happiness & Happiness & Happiness & Happiness & Happiness & Surprise \\ \hline
+正答数 & 4 & 6 & 6 & 8 & 4 & 4 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{3 層 3×3 Sadness}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|} \hline
+ & 12 48 48 & 12 96 96 & 24 48 48 & 24 96 96 & 48 48 48 & 48 96 96 \\ \hline
+1 & Happiness & Happiness & Happiness & Happiness & Sadness & Sadness \\ \hline
+2 & Anger & Anger & Happiness & Surprise & Anger & Anger \\ \hline
+3 & Happiness & Happiness & Happiness & Happiness & Sadness & Sadness \\ \hline
+4 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+5 & Anger & Anger & Happiness & Surprise & Anger & Anger \\ \hline
+6 & Anger & Anger & Anger & Surprise & Anger & Anger \\ \hline
+7 & Happiness & Happiness & Happiness & Happiness & Happiness & Happiness \\ \hline
+8 & Anger & Anger & Happiness & Surprise & Anger & Anger \\ \hline
+正答数 & 0 & 0 & 0 & 0 & 2 & 2 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+  \begin{center}
+    \caption{3 層 3×3 Surprise}    
+    \scalebox{0.8}{
+      \begin{tabular}[t]{|l|c|c|c|c|c|c|} \hline
+ & 12 48 48 & 12 96 96 & 24 48 48 & 24 96 96 & 48 48 48 & 48 96 96 \\ \hline
+1 & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise \\ \hline
+2 & Anger & Surprise & Surprise & Happiness & Surprise & Surprise \\ \hline
+3 & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise \\ \hline
+4 & Anger & Surprise & Surprise & Anger & Surprise & Surprise \\ \hline
+5 & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise \\ \hline
+6 & Anger & Surprise & Surprise & Happiness & Surprise & Surprise \\ \hline
+7 & Anger & Surprise & Surprise & Happiness & Surprise & Surprise \\ \hline
+8 & Surprise & Surprise & Surprise & Surprise & Surprise & Surprise \\ \hline
+正答数 & 4 & 8 & 8 & 4 & 8 & 8 \\ \hline
+ \end{tabular}}
+ \end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

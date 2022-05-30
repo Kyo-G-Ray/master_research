@@ -1,0 +1,51 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習による動画像からの表情認識手法の開発\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{4}{5}{8}{(水)}{\ 小松　大起}
+
+\section{先週までの作業}
+\begin{itemize}
+\item 表情の画像と動画像を集める。
+\item google colaboratory の使い方を教えてもらった。
+\item KP
+          
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+          \item kerasのインストールを途中まで進めた。
+
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+          \item kerasを入れCNNを実現し、静止画での表情認識を行う
+          \item 表情の動画像のデータをもっと集める
+          \item CNNの仕組みについて学習する。
+\end{itemize}
+
+
+
+
+\end{document}

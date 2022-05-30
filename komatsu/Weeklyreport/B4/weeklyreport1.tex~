@@ -1,0 +1,51 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習による動画像からの表情認識手法の開発\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{1}{4}{10}{(水)}{\ 小松　大起}
+
+
+\section{先週までの作業}
+\begin{itemize}
+          \item debianのインストール練習\\内容を理解する
+          
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+          \item　debian testingのインストール
+          \item  全体ゼミ、B4ゼミの予習
+          
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+          \item 就活の経験を積んでおく
+          \item 表情の動画像のデータを集める
+          \item keras を用いてconvolution neural networkを実現する
+\end{itemize}
+
+
+
+
+\end{document}

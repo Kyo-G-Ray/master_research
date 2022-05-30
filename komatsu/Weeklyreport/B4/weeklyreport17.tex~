@@ -1,0 +1,179 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習による動画像からの表情認識手法の開発\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{17}{10}{2}{(水)}{\ 小松　大起}
+
+\section{動画像による表情認識を行う深層学習モデル}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-3mm}
+\subsection{CNN}
+\vspace{-2mm}
+CNN は，
+畳み込み層とプーリング層を 1 つのペアーとし，
+それらが複数回重ね合せて構成される順方向性ニューラルネットワークである．
+ここで，対象とする画像を $X \times Y$ pixels の RGB の階調値とし，
+$k$ 番目の階調の素子 $(i,\ j)$ の画素値を $I^{(k)}_{ij}$ とする．
+ただし，$k = 1$ が R，$k = 2$ が G，$k = 3$ が B とする．
+最初の層の畳み込み層の $a$ 番目のフィルターの
+$(i,\ j)$ 番目の素子の内部状態を
+$y^{(1)(a)}_{ij}$，
+その出力を
+$\tilde{y}_{ij}^{(1)(a)}$，
+プーリング層の出力を
+$z^{(1)(a)}_{ij}$
+とすると，
+各々以下のように与えられる．
+%%%%%%%%%%%%%%%%
+\vspace{-2mm}
+\begin{equation}
+\footnotesize
+  y^{(1) (a)}_{ij} = \sum_{k=1}^3
+  \left(\sum_{x \in W} \sum_{y \in W}
+         w^{(1)(a)(k)}_{ij} I^{(k)}_{i + x,\ j + y}  + b^{(1)(a)(k)}_{ij}
+         \right)
+  %%%%%
+  \label{eq:convolution1st}
+\end{equation}
+\vspace{-2mm}
+%%%%%%%%%%%%%%%%
+\begin{equation}
+  \footnotesize
+  \tilde{y}_{ij}^{(1)(a)} = \max \left(y^{(1) (a)}_{ij},\ 0 \right)
+  %%%%%
+  \label{eq:OutputConvolution}
+\end{equation}
+\vspace{-2mm}
+%%%%%%%%%%%%%%%
+\begin{equation}
+  \footnotesize
+  z_{ij}^{(1)(a)} = \max_{x \in W,\ y\in W} \tilde{y}_{i + x,\ j + y}^{(1)(a)}
+  %%%%%
+  \label{eq:Pooling}
+\end{equation}
+%\vspace{-2mm}
+%%%%%%%%%%%%%%%%
+\noindent 
+ここで，
+$w^{(1)(a)(k)}_{ij}$ は入力層と畳み込み層間のシナプス結合加重，
+$W$ は各素子が入力を受ける範囲を与える配置集合（受容野），
+$b^{(1)(a)(k)}_{ij}$ は閾値である．
+
+$\ell$ 番目の層の畳み込み層の出力 $\tilde{y}_{ij}^{(\ell)(a)}$
+及びプーリング層の出力
+$z^{(\ell)(a)}_{ij}$
+は式（\ref{eq:OutputConvolution}）及び（\ref{eq:Pooling}）
+と同じであるが，
+$\ell$ 番目の層の畳み込み層の内部状態 $y^{(\ell)(a)}_{ij}$ は異なり，
+以下の式で与えられる．
+%%%%%%%%%%%%%%%%
+\vspace{-2mm}
+\begin{equation}
+\footnotesize
+  y^{(\ell) (a)}_{ij} = \sum_{\alpha=1}^{N(\ell - 1)} \sum_{x \in W} \sum_{y \in W}
+     w^{(\ell)(a,\ \alpha)}_{ij} z^{(\ell - 1)(\alpha)}_{i + x,\ j + y}
+         + b^{(\ell)(a)}_{ij}
+  %%%%%
+  \label{eq:convolutionLth}
+\end{equation}
+\vspace{-2mm}
+%%%%%%%%%%%%%%%%
+
+最終層（$L$）の内部状態 $y^{(L)}_{k}$ は，
+前層のプーリング層の出力 $z^{(L - 1)(a)}_{ij}$ との全結合として，
+以下のように与えられる．
+%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-2mm}
+\begin{equation}
+  \footnotesize
+  y^{(L)}_{k} = \sum_{\alpha=1}^{N(L - 1)} \sum_{i} \sum_{j}
+     w^{(L)(\alpha)}_{kij} z^{(L - 1)(\alpha)}_{ij}
+         + b^{(L)_k}
+   %%%%%
+  \label{eq:OutputInternal}
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%
+そして，その出力は，ソフトマックス関数により，
+以下のように与えられる．
+%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-2mm}
+\begin{equation}
+  \footnotesize
+\tilde{y}_{k}^{(L)} = \frac{y^{(L)}_{k}}{\sum_i y^{(L)}_{i}}
+   %%%%%
+  \label{eq:Output}
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\vspace{-9mm}
+\subsection{Long Short-Term Memory(LSTM)}
+\vspace{-3mm}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+LSTM は RNN を拡張したものであり，
+畳み込み層の内部状態を，
+以下のように変更した．
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-2mm}
+\begin{equation}
+\tiny
+  y^{(\ell) (a)}_{ij}(t) = y^{(\ell) (a)}_{ij} +
+  \sum_{\tau = 1}^T \sum_{\alpha=1}^{N(\ell)} \sum_{x \in W} \sum_{y \in W}
+  v^{(\ell)(a,\ \alpha)}_{ij}
+  y^{(\ell)(\alpha)}_{i + x,\ j + y}(t - \tau)
+  %%
+  \label{eq:LSTM}
+\end{equation}
+\vspace{-1mm}
+%%%%%%%%%%%%%%%%%
+\noindent 
+ここで，$y^{(\ell) (a)}_{ij}$ は式（\ref{eq:convolutionLth}） であり，
+$ y^{(\ell) (a)}_{ij}(t)$ は $t$ 回目の学習時の畳み込み層の内部状態の
+値である．
+RNN は，LSTM の $T = 1$ に相当する．
+数値実験では，$T = 10$ としている．
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\section{先週までの作業}
+\begin{itemize}
+\item 院試の勉強及び、研究についての勉強
+  \item GPU サーバについて
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+\item 院試の勉強．
+  \item 研究に関する勉強．
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+\item 院試の勉強.
+  \item  実験を行う．
+\end{itemize}
+\newpage
+\title{学会参加報告書}
+\end{document}

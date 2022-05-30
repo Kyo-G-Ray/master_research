@@ -1,0 +1,81 @@
+\section*{概要}
+{\setlength{\baselineskip}{6.6mm}
+\large
+本研究では，ネットワークの構造の違いが表情認識の学習精度に与える影響についての研究を行った．
+深層学習は，様々分野で大きな成果をあげているが，特に画像処理分野での成果が有名である．
+画像処理には，人物認識や表情認識などがあり，
+一般的に人物認識よりも表情認識のほうが変化が少なく難しいとされている．
+そこで本研究では，
+畳み込みニューラルネットワーク（CNN）を用いて表情認識を実現する．
+高精度な認識を実現するには，十分な数の学習データを用意するだけではなく，
+前の層内の素子との結合範囲（カーネルサイズや受容野とも呼ばれる），
+畳み込み層で抽出する特徴数（フィルタ数），
+畳み込み層とプーリング層の組合せを一つの層としその層数と言った
+ハイパーパラメタを問題に合せて適切に与える必要がある．
+そこで本研究の目的は，カーネルサイズ，フィルタ数，層数を様々に組合せることで，
+これらハイパパラメータの最適値を求め，
+高精度な表情認識を実現することである．
+その際，計算量を軽減するため，
+（1）1 層 CNN においてカーネルサイズ，フィルタ数を様々に変えこれらの探索範囲を絞り込み，
+次に，（2）2 層 CNNでは 1 層 CNN の結果にもとづき絞り込められたカーネルサイズ，
+フィルタ数の組合せでさらなる絞り込みを行ない，
+最後に（3）特定のカーネルサイズでフィルタ数のみ変え，3 層 CNN，4 層 CNN のフィルタ数の
+最適数を求める．
+実際の数値実験では，
+イスタンブールのマルマラ大学が提供してる BAUM-1 と日本人女性の表情のみの JAFEE を用いる．
+それぞれのデータセットで 4 表情ずつ用いて実験を行なった．
+訓練データは，BAUM-1 では，360 枚とし，
+JAFEE では 1440 枚とした.
+検査データは, BAUM-1 では 88 枚とし，
+JAFEE では，72 枚とした.
+実験の結果最適なハイパパラメータであったのは,
+BAUM-1 のときには層数 1 層でカーネルサイズ 7×7,フィルタ数が 96 枚のと
+きで，識別率 48 $\%$,
+JAFEE のときには層数 2 層でカーネルサイズ 3×3,フィルタ数が 48 と 96 のときと 96 と 96 のときで，
+識別率 75$\%$ であった．
+BAUM-1 は 48$\%$ を超える識別率を出すことができなかったが,
+これは学習データ数が少なかったために最良なハイパパラメータを設定できていないことが考えられる．
+JAFEE では，検査データが訓練データと同じ人物の際にはほとんど 100$\%$ に近い識別率であったが,
+異なる人物の場合には sadness の表情が happiness の表情に誤認識してしまった．
+それ以外の 3 表情は正しく認識できていた．
+このような問題は，単に表情画像を入力画像とするだけでなく，
+各表情間の差分データも入力とし，
+抽出すべき特徴をより明確にすることで解決するこが可能となると考える．
+このような構成法を実現してみることが今後の課題である．
+
+}
+\newpage
+\vspace{-5mm}
+
+\section*{Abstract}
+{\large
+In this study, I investigated the effects of differences in network structure on the learning accuracy of facial expression recognition.
+Although deep learning has achieved great results in various fields, it is particularly famous in the field of image processing.
+Image processing includes person recognition and facial expression recognition, generally facial expression recognition is more difficult than human recognition, because there are little changes.
+In this study, I implement facial expression recognition using convolutional neural network (CNN).
+In order to implement high-precision recognition, it is necessary not only to prepare a sufficient number of training data, range of connection with elements in the previous layer (also called kernel size or receptive field), the number of features (the number of filters) extracted by the convolutional layer, combination of convolutional layer and pooling layer as one layer, it is said that hyperparameters need to be given appropriately numbers according to the problem.
+Therefore, the purpose of this research is to use various combinations of kernel size, number of filters, and number of layers, find the optimal values ​​of these hyperparameters, the goal is to implement highly accurate facial expression recognition.At that time, in order to reduce the amount of calculation,
+(1) the kernel size and the number of filters are varied in the one-layer CNN to narrow down these search ranges.
+Next, (2) in the two-layer CNN, further refinement is performed with the combination of the kernel size and the number of filters narrowed down based on the result of the one-layer CNN.
+Finally, (3) only the number of filters is changed for a specific kernel size, and the number of filters in the 3-layer CNN and 4-layer CNN is calculated to find the optimal number.
+In actual numerical experiments,
+BAUM-1 provided by Marmara University in Istanbul and JAFEE with only facial expressions of Japanese women are used.
+The experiment was performed using four expressions in each data set.
+The training data is 360 for BAUM-1,
+JAFEE uses 1440.
+The inspection data is 88 for BAUM-1,
+JAFEE uses 72.
+As a result of the experiment, the optimal hyperparameter was
+In the case of BAUM-1, the number of layers is one, the kernel size is 7 × 7, and the number of filters is 96.
+The recognition rate was 48 $ \% $.
+In the case of JAFEE, the number of layers is 2, the kernel size is 3 × 3, and when the number of filters is 48 and 96, and when it was 96 and 96.The recognition rate was 75 $ \% $ .
+BAUM-1 could not achieve a recognition rate of over 48 $ \% $,
+this is because the number of training data was small and the best hyper parameters could not be set.
+In JAFEE, the recognition rate was almost 100 $ \% $ when the test data was the same person as the training data.
+In the case of different people, the expression of sadness was misrecognized as the expression of happiness.
+The other three facial expressions were correctly recognized.
+Such a problem is not limited to just inputting facial expression images,
+the difference data between each facial expression is also input,
+we think that it is possible to solve by making the features to be extracted clearer.
+It is a future task to realize such a construction method.
+}

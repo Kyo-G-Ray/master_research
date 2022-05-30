@@ -1,0 +1,105 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+\usepackage{graphicx}
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習を用いた動画像からの危険認知手法のための基礎的研究\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{3}{5}{5}{(火)}{\ 小松　大起}
+
+\section{PredNet}
+PredNet は Deep Recurrent Convolutional Neural Network  の 1 種で 神経科学の概念である Predictive Coding を組み込んで作られたモデルである.
+
+\subsection{Predictive Coding}
+
+\begin{figure}[hb]
+\includegraphics[scale=0.5]{predictivecoding.png}
+ \caption{2 つのニューロンの模式図}
+ \end{figure}
+
+2 種類のニューロンが存在するとし,それを図 1 で示す.
+図の上では 2 つのニューロンであるが, Layer1 と Layer2 という 2 層について,それぞれを代表するニューロンを 1 つずつ描いている.
+まず, Layer1 のニューロンは下層から
+$input(t)$
+を受け取る.
+これは入力刺激と呼ばれる.
+次に Layer1 のニューロンは
+$x(t)$
+を出力する.
+これは誤差信号または残差と呼ばれ,以下の式が成り立つ.
+%%%%%%%%%%%%%%%
+\begin{equation}
+x(t) = input(t) - y(t)
+\end{equation}
+%%%%%%%%%%%%%%%
+また, $y(t)$ は Layer2 のニューロンからの出力で, Layer1 のニューロンへの入力を予測する.ここで
+%%%%%%%%%%%%%%%
+\begin{equation}
+dy/dt = x(t) = input(t) - y(t)
+\end{equation}
+%%%%%%%%%%%%%%%
+であり,$dy/dt = 0$ すなわち $y(t) = input(t)$ となるように学習が進行するモデルである.
+
+\subsection{PredNet の層構造}
+PredNet の各層には 4 つの素子が存在しておりそれぞれ、Target, Representation, Prediction, Errorと呼ぶ.
+Target は下層からの出力である誤差信号をエンコード,符号化する.
+Representation は Recurrent unitで,上層からの出力,側方からの誤差信号, 1 ステップ前の自分の出力を受け取る.
+Representation unit は Target の予測をする Prediction unit に投射し,入力の予測が出力される.
+Error は Prediction と Target の誤差であり, Error は上層に送られる.
+この Error が小さくなるように学習を進めていく.
+また,層構造の例を図 2 に示す.
+
+ \begin{figure}[hb]
+\includegraphics[scale=0.4]{prednet.png}
+ \caption{PredNet の層構造の例}
+\end{figure}
+
+\section{使用した動画像}
+\subsection{lyft level5}
+lyft という団体が公開しているデータセット. lyft level5 が 2 年間にわたって収集してきた.
+
+\section{scipy}
+scipy のバージョンによっては imread　という
+\section{先週までの作業}
+\begin{itemize}
+          \item PredNet について
+          
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+          \item PredNet について調べる
+          Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning
+          という論文で提案された手法
+         kitti は2011 年に作成された動画で 15 秒ほどの動画でもダウンロードに数時間かかる.他の動画像があったのでそちらで代用できるか試してみる.
+         \item ゼミの予習
+         \item lyft level 5 というデータセットをダウンロードした.約 13 万枚のフレームごとの画像があるが,テキストデータもありファイルの形式はjson. シーンだけでなく車や人といったカテゴリやその状態,その物体のどれだけの部分が写っているかという意味での可視率などもテキストファイルとして扱われている.
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+          \item 動画像集め
+          \item プログラムを読む
+\end{itemize}
+
+
+
+
+\end{document}
