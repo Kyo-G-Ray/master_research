@@ -9,8 +9,10 @@ from sklearn.metrics.cluster import normalized_mutual_info_score
 
 
 # 使いたい列を usecols に
-df_score = pd.read_csv("./data/time.csv", usecols=[1,2,3,4])
-#df_score = pd.read_csv("aweek.csv")
+# df_score = pd.read_csv("./data/time.csv", usecols=[1,2,3,4])
+# df_score = pd.read_csv("./data/day.csv", usecols=[1,2,3,4])
+df_score = pd.read_csv("./data/week.csv", usecols=[1,2,3,4])
+
 print(df_score.head())
 
 
@@ -26,6 +28,7 @@ print(df_corr)
 df_score_2 = df_score.values
 print(df_score.isnull().all())
 #print(df_score_2)
+
 #mi = normalized_mutual_info_score([0,0,1,1],[1,1,0,0])
 mi = normalized_mutual_info_score(df_score_2[:,2],df_score_2[:,3])
 print(mi)
