@@ -75,7 +75,7 @@ trainX = numpy.reshape(trainX, (trainX.shape[0], trainX.shape[1], trainX.shape[2
 testX = numpy.reshape(testX, (testX.shape[0], testX.shape[1], testX.shape[2]))
 
 # create and fit the LSTM network
-hidden_neurons = 300
+hidden_neurons = 100
 
 
 model = keras.Sequential()
