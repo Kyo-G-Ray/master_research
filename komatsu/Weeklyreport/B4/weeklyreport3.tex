@@ -1,0 +1,53 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習による動画像からの表情認識手法の開発\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{3}{4}{24}{(水)}{\ 小松　大起}
+
+\section{はじめに}
+\begin{itemize}
+  \item 静止画での深層学習は、現時点でも調べると多数の検索結果を得られるが動画像での深層学習に関しては少ない。表情は個人によっても違いがあり、複雑なものであり静止画ではわかりかねることが多いが動画像を用いることにより動きを学習し判別できるようになればよいと考える。
+\section{先週までの作業}
+\begin{itemize}
+          \item 修論を読む
+          
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+          \item JAFFEから表情の画像をダウンロード
+          \item B4ゼミの予習
+          \item kerasのインストール
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+          \item google colaboratory でGPUを使い深層学習できるようにする
+          \item 表情の動画像のデータを集める
+          \item kerasの再インストール
+\end{itemize}
+
+
+
+
+\end{document}

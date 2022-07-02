@@ -1,0 +1,239 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                       %
+%  卒研発表・修論公聴会 予稿用テンプレートファイル      %
+%                   for ips.sty ver2.0                  %
+%                                                       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper,9pt,twocolumn]{jarticle}
+
+\usepackage{resume}
+\usepackage{amsmath,bm}
+\usepackage{nidanfloat}
+\pagestyle{empty}
+\newcommand{\normallist}{
+   \setlength{\itemsep}{0.2\itemsep}\setlength{\parskip}{0.2\parskip}}
+%%%%%%    TEXT START    %%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%　ヘッダ　%%%%%%%%%%%%%%%%%%%%%%%%%%
+\twocolumn[%
+\begin{center}
+
+%--------------------------------------------------------------
+% 発表タイトル
+% （2行にわたるときは
+%  \2jtitle{番号}{タイトル1}{タイトル2}）
+%--------------------------------------------------------------
+
+\2jtitle{A5-7}{ニューラルネットワークモデルにおけるカオス生成法による動力学特性}{}
+
+%--------------------------------------------------------------
+% 著者名
+%--------------------------------------------------------------
+% name{***} : 氏名
+
+\begin{authors}
+\name{濱田利行}{工学部 知能システム工学科 理と匠の研究室}
+\end{authors}
+
+%--------------------------------------------------------------
+\end{center}
+]%
+
+%%%%%%%%%%%%%%%%%%%%%%%%　ここから本文　%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ \section{はじめに}
+本研究では，リカレントニューラルネットワークモデルに発現するカオスダイナミックスの記憶探索における動力学的特性を明らかにする．リカレントニューラルネットワークにカオスを発現させるモデルは，主に次の4つのモデルが良く知られている．\\
+\begin{enumerate}
+\vspace{-8mm}
+ \item 合原のカオスニューロンモデル：相対不応性の効果をモデルに考慮することで，孤立ニューロンもカオスを発現\cite{sankou1}.\\
+\vspace{-8mm}
+\item 黒岩$\&$奈良モデル：シナプス結果が環境条件によって興奮性，抑制性
+  となり得る効果をシナプス結合符号反転法として考慮し，ネットワークを構
+  成することでカオスを発現\cite{sankou2}．\\
+\vspace{-8mm}
+\item 奈良$\&$Davisモデル：シナプス側抑制の効果をシナプス数結合数減少として考慮しネットワークを構成することでカオスを発現\cite{sankou3}.\\
+\vspace{-8mm}
+\item 津田モデル：ニューロンの膜電位が閾値を越えても必ずしもスパイク放電しないという特性を考慮し，ネットワークを構成することでカオスを発現．
+\vspace{-3mm}
+\end{enumerate}
+~~我々は，これまで，(1)〜(3)のモデルにおけるカオス的遍歴現象を記憶探査に
+用いることで，カオスの発現方法によらず効果的な探査が可能であることを示
+してきた\cite{sankou2}〜\cite{sankou4}．%奈良，黒岩，石井
+しかし，これまでの研究ではカオス的遍歴現象を，記憶パターン空間での研
+究し，詳細に動的特性の違いについて研究していない．カオスの発現方法が違
+えば動的特性も異なる可能性があり，その違いを利用した，より有効なカオス
+の応用方法があると考えられる．本研究の目的は，(1)〜(3)のモデルに
+おけるカオス的ダイナミックスの動力学的特性を詳細に研究し，どのような違
+いがあるかを明らかにすることである．
+\vspace{-2mm}
+ \section{カオスニューラルネットワークモデル}
+\subsection{連想記憶型リカレントネットワークモデル}
+リカレントネットワークモデルの状態更新式は次のように与えられる．
+\vspace{-6mm}
+\begin{equation}
+  z_i(t+1)=f(\sum_{j=1}^{N}W_{ij}z_j(t))
+\end{equation}
+出力は，[-1,1]の連続的な値を与える以下の出力関数を用いる．
+\vspace{-3mm}
+\begin{equation}
+  z_i(t+1)=\tanh(\beta u_i(t+1))
+\end{equation}
+ここで$\beta$,は$\tanh(x)$の原点での傾きである．
+シナプス結合$W_{ij}$を適切に与えることにより，ネットワークに記憶を埋め
+込むことができる．記憶させるパターンを$v^{a \mu}$とすると本研究では，
+以下に与えるような非対称結合強度行列{$W_{ij}$}を用いて，記憶を埋めこんだ\cite{sankou3}.
+\vspace{-5mm}
+\begin{equation}
+  W_{ij}=\sum_{a=1}^{P}\sum_{μ=1}^{L}{v_i}^{a \mu+1}{({v_j}^{a \mu})^{†}}
+\end{equation}
+ここで$P$は記憶させるパターンのサイクル数，$L$は各サイクル内に存在する
+パターン数である.${({v_j}^{a \mu})}^{†}$は${v_i}^{a \mu}$に対する偽直交
+行列である．式(7)に従ってシナプス結合強度を決定することにより，L
+ステップ1サイクルのP種類のリミットサイクル状のパターンがネットワークに
+記憶される．本研究では，図1のパターンを埋めこんだ．これはL=6，P=5である．
+\vspace{-3mm}
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics[width=0.4\hsize]{/home/hamada/C/research/New_Basin_volume/result/face.eps}
+  \end{center}
+  \vspace{-7mm}
+  \caption{記憶させるパターン}
+  \label{fig:図1}
+\end{figure}
+\vspace{-4mm}
+\subsection{合原のカオスニューロン}
+ 合原のカオスニューラルネットワークモデルの状態更新式は次のようにで表
+ される．
+\vspace{-3mm}
+\begin{equation}
+  u_i(t+1)=\sum_{j=1}^{N}W_{ij}z_j(t)+ku_i(t)-\alpha z_i(t)+A
+\end{equation}
+ここで$k$は自身の履歴の強さを表す減衰定数$(0\le k <1)$．$\alpha$は相対
+不応性の項の係数であり，$A$は定常バイアス入力である．出力は式(2)を用いる．
+
+\subsection{黒岩$\&$奈良モデル}
+黒岩$\&$奈良モデルにおけるニューラルネットワークの状態更新方程式は次式
+のように与えられる．
+
+\vspace{-4mm}
+\begin{equation}
+  u_i(t+1)=\begin{cases}
+              \textstyle\sum\limits_{j=1}^{N}W_{ij}ε_{ij}z_j(t) & \text{(t=even)}\\
+	      \textstyle\sum\limits_{j=1}^{N}W_{ij}z_j(t)& \text{(t=odd)}\\
+  \end{cases}
+ \end{equation}
+ここで，$\epsilon_{ij}$は部分的に反転させるシナプス結合強度を決定する
+ものであり，次のように与えられる．
+\begin{equation}
+  \epsilon_{ij}(r)=\begin{cases}
+              -1 & \text{$(j \in F_i(r)$)}\\
+	      1 &  \text{(それ以外)}\\
+          \end{cases}  
+\end{equation}
+~~ここで，$F_i(r)$は，ニューロン$i$に対して$r$個部分的にシナプス結合を反
+転させるシナプス結合強度の位置を与える配置集合である．
+
+\subsection{奈良$\&$Davisらのモデル}
+奈良$\&$Davisのモデルによるネットワークの状態更新式は以下のように与え
+られる．
+\vspace{-6mm}
+\begin{equation}
+  z_i(t+1)=f(\textstyle\sum\limits_{j=1}^{N}W_{ij}\epsilon_{ij}z_j(t))
+\end{equation}
+\vspace{-3mm}
+ここで，$\epsilon_{ij}$は，シナプス結合が抑制された結合を表わし，次のように与えられる．
+\vspace{-2mm}
+\begin{equation}
+  \epsilon_{ij}(d)=\begin{cases}
+             0 & \text{($j \in F_i(d)$)}\\
+	     1 & \text{(それ以外)}\\
+	     \end{cases}
+\end{equation}
+ここで，$F_i(d)$はニューロン$i$に対して結合しているシナプス結合の中で
+抑制された$d$個のニューロンの配置を与える集合である.
+
+\begin{figure*}[hbtp]
+  \begin{center}
+    \includegraphics[width=0.7\hsize]{/home/hamada/sotuken/gousei.eps}
+  \end{center}
+  \vspace{-6mm}
+  \caption{3つのモデルのパターン空間での動的特性}
+  \label{図2}
+\end{figure*}
+ \vspace{-2mm}
+\section{動的特性を分析する計算機実験}
+図 2 に，各モデルのパターン空間での動的特性を与える．そこでのシステムパラメータは，合原モデルでは $\alpha$，黒岩$\&$奈良モデルでは $r$，及び奈良 $\&$ Davis モデルでは $d$である．
+図 2 の重なりの分岐図において，$\alpha=1.2$，$r=190$，$d=390$ 付近では，
+縦軸方向に多くの点がプロットされており，各々のネットワークは複雑な出力
+を与えているといえる．
+実際，この時の出力をみると（図 2 における中段のパターン出力参照），
+記憶パターンとは異なり複雑なパターンが出力されていることが分かる．
+更に，この出力がリカレントネットワークモデルのどのアトラクタベイスンに属するのかを調べた結果が，図 2 におけるベイスン訪問頻度である．
+多少の偏りはあるものの，いずれのモデルにおいても，
+一様に全てのアトラクタベイスンをカオス軌道が遍歴していることが分かる．
+
+このような結果は，動的特性をパターン空間で考えているからであり，
+本当にこのような動的特性がモデルによらず普遍的なものなのかを，
+リヤプノフ次元という量を用いて解析した．
+リヤプノフ次元は，アトラクタの拡がりの程度を与える，
+フラクタル次元の一つである．
+得られた結果を，以下に与える．
+%%%%%%%%%%%%%
+\vspace{-3mm}
+\begin{itemize}
+  \item k=0.9，$\alpha$=1.2の場合:$D_L$=400.0
+    \vspace{-3mm}
+  \item 反転数 $r=190$の場合:$D_L$=17.706243
+    \vspace{-3mm}
+  \item 減少数 $d=390$の場合:$D_L$=43.041543
+\end{itemize}
+%%%%%%%%%%%%%%
+~~この結果より，合原モデルは，パターン空間での動的特性にはさほど違いが見られなくても，リヤプノフ次元というアトラクタの拡がりは，他のモデルに比べても
+優位に大きいことが分かった．
+
+%%%%%%%%%%%%%%%%%%%%%
+\section{考察}
+ここでは，まず，なぜ合原モデルは他のモデルに比べてリヤプノフ次元が大きいのかについて考察する．
+リヤプノフ次元は，$u_i(t)$ の写像の起動不安定性にもとづいて与えられるため，
+内部状態 $u_i(t)$ のばらつきについて研究した，
+その結果，合原モデルは $-3.33$ 〜 $3.98$ であったの対し，
+他のモデルではほぼ0近辺に分布していた．
+つまり，合原モデルの方が軌道不安定性が大きいことを意味し，
+未知のパターンを含むような記憶パターンを探索する際に有用である可能性がある．
+一方，他のモデルでは，軌道不安定性は弱いため，
+小さな制御信号に対し鋭敏に応答することが可能であると考えられる．
+今後は，これらの特性を考慮した，記憶パターンの探索や，
+制御方法について研究する予定である．
+
+\vspace{-1mm}
+ %-----------  参考文献  -----------%
+ % 引用順に出力されます．           %
+ % つまり，引用しないと使えません   %
+ %\bibliographystyle{junsrt}
+ %\bibliography{sankou}
+
+
+ \begin{thebibliography}{9}
+ \bibitem{sankou1} 
+   K.Aihara，T. Takabe and M. Toyoda : ``Chaostic Neural
+   Networks'',Phys. Lett. A，144(6，7)，pp.333-339，1990
+\vspace{-3mm}
+\bibitem{sankou2}
+  石井 孝典，黒岩 丈介，小倉 久和，牛島 範亮，高橋 勇，白井 治彦，小高 知宏，シナプス結合反転法によるカオス的遍歴の部分入力への応答
+  鋭敏性，信学技報，NLP2005-128(2006-01)
+\vspace{-3mm}
+\bibitem{sankou3}
+  Shigetoshi Nara，Peter Davis，Masayoshi Kawachi and Hiroo Totsuji： ''
+  Chaotic Memory Dynamics in a Recurent Neural Network with Cycle'
+  memories Embeded by Pseudoinverse Method ``，Int. J. Bifurcation
+  $\&$ Chaos，5，pp.1205-1212，1995
+\vspace{-3mm}
+\bibitem{sankou4}
+  Jousuke Kuroiwa，Naoki Masutani，Shigetoshi Nara and Kazuyuki Aihara：''Sensitive responses of chaotic wandering to memory pattern
+  fragment inputs in a chaotic neural network mode''，
+  Int.J.Bifurcation$\&$Chaos，14，pp.1413-1421，2004.
+
+ \end{thebibliography}
+\end{document}

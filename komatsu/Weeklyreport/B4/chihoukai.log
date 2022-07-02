@@ -1,0 +1,156 @@
+This is LuaTeX, Version 0.95.0 (TeX Live 2016/Debian)  (format=lualatex 2019.6.12)  28 JUN 2019 05:29
+ restricted system commands enabled.
+**chihoukai.tex
+(./chihoukai.tex
+LaTeX2e <2017/01/01> patch level 3
+Lua module: luaotfload-main 2016/06/16 2.70003 OpenType layout system.
+Lua module: lualibs 2016-04-06 2.4 ConTeXt Lua standard libraries.
+Lua module: lualibs-extended 2016-04-06 2.4 ConTeXt Lua libraries -- extended co
+llection.(using write cache: /home/daiki/.texlive2016/texmf-var/luatex-cache/gen
+eric)(using read cache: /var/lib/texmf/luatex-cache/generic /home/daiki/.texlive
+2016/texmf-var/luatex-cache/generic)
+luaotfload | conf : Root cache directory is /home/daiki/.texlive2016/texmf-var/l
+uatex-cache/generic/names.
+luaotfload | init : Loading fontloader “fontloader-2016-06-16.lua” from kpse
+-resolved path “/usr/share/texlive/texmf-dist/tex/luatex/luaotfload/fontloader
+-2016-06-16.lua”.
+Lua-only attribute luaotfload@state = 1
+Lua-only attribute luaotfload@noligature = 2
+Lua-only attribute luaotfload@syllabe = 3
+luaotfload | init : Context OpenType loader version “3.023”
+Inserting `luaotfload.node_processor' at position 1 in `pre_linebreak_filter'.
+Inserting `luaotfload.node_processor' at position 1 in `hpack_filter'.
+Inserting `luaotfload.define_font' at position 1 in `define_font'.
+Lua-only attribute luaotfload_color_attribute = 4
+luaotfload | conf : Root cache directory is /home/daiki/.texlive2016/texmf-var/l
+uatex-cache/generic/names.
+Inserting `luaotfload.aux.set_sscale_dimens' at position 1 in `luaotfload.patch_
+font'.
+Inserting `luaotfload.aux.patch_cambria_domh' at position 2 in `luaotfload.patch
+_font'.
+Inserting `luaotfload.aux.fixup_fontdata' at position 1 in `luaotfload.patch_fon
+t_unsafe'.
+Inserting `luaotfload.aux.set_capheight' at position 3 in `luaotfload.patch_font
+'.
+Inserting `luaotfload.rewrite_fontname' at position 4 in `luaotfload.patch_font'
+.
+luaotfload | main : initialization completed in 0.746 seconds
+Babel <3.9r> and hyphenation patterns for 1 language(s) loaded.
+(/usr/share/texlive/texmf-dist/tex/platex/base/jarticle.cls
+
+! LaTeX Error: This file needs format `pLaTeX2e'
+               but this is `LaTeX2e'.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.16 \NeedsTeXFormat{pLaTeX2e}
+                            
+? 
+)
+
+! LaTeX Error: \section undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.37 \renewcommand{\section}
+                          {\@startsection{section}{1}{\z@}%
+? 
+
+! LaTeX Error: \subsection undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.41 \renewcommand{\subsection}
+                             {\@startsection{subsection}{2}{\z@}%
+? 
+No file chihoukai.aux.
+
+\openout1 = chihoukai.aux
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+
+! LaTeX Error: The font size command \normalsize is not defined:
+               there is probably something wrong with the class file.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.49 \begin{document}
+                   
+? 
+! Undefined control sequence.
+<argument> \begin {center} {\Large 
+                        2019年度電気・情報関係学会北陸支部連
+合
+l.89 ]
+     % -- １段組にしたい場合は，ここをコメントアウトす
+る
+? 
+! Undefined control sequence.
+<argument> ...egin {minipage}{118mm} \begin {center} {\Large 
+                                                  \bf ネットワークの構..
+.
+l.89 ]
+     % -- １段組にしたい場合は，ここをコメントアウトす
+る
+? 
+! Undefined control sequence.
+<argument> ... {minipage}{118mm} \begin {center} {\Large \bf 
+                                                  ネットワークの構造...
+
+l.89 ]
+     % -- １段組にしたい場合は，ここをコメントアウトす
+る
+? 
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 89.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 89.
+! Undefined control sequence.
+<argument> ...egin {minipage}{118mm} \begin {center} {\large 
+                                                  {小松　大起（福井大..
+.
+l.89 ]
+     % -- １段組にしたい場合は，ここをコメントアウトす
+る
+? 
+! Emergency stop.
+<argument> ...egin {minipage}{118mm} \begin {center} {\large 
+                                                  {小松　大起（福井大..
+.
+l.89 ]
+     % -- １段組にしたい場合は，ここをコメントアウトす
+る
+End of file on the terminal!
+
+
+
+Here is how much of LuaTeX's memory you used:
+ 41 strings out of 494577
+ 100000,89155 words of node,token memory allocated 1330 words of node memory still in use:
+   13 hlist, 1 vlist, 4 rule, 5 local_par, 3 dir, 2 math, 67 glue, 12 penalty, 4
+7 glyph, 22 attribute, 33 glue_spec, 22 attribute_list, 3 temp, 1 write nodes
+   avail lists: 1:1,2:9,4:2,5:3,10:1
+ 4198 multiletter control sequences out of 65536+600000
+ 24 fonts using 1213127 bytes
+ 22i,4n,19p,113b,176s stack positions out of 5000i,500n,10000p,200000b,100000s
+!  ==> Fatal error occurred, no output PDF file produced!

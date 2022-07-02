@@ -1,0 +1,69 @@
+@book{sankou1,
+author={浅川伸一},
+year=2016,
+title={python で体験する深層学習},
+publisher={コロナ社}
+}
+
+@book{sankou2,
+author={岡谷貴之},
+year=2013,
+title={画像認識のための深層学習},
+publisher={人工知能学会誌, vol.28(6), pp.962-974}
+}
+
+@book{sankou3,
+author={柳井啓司},
+year=2007,
+title={一般物体認識の現状と今後},
+publisher={情報処理学会論文誌}
+}
+
+@book{sankou4,
+author={Shin Kamada, Takumi Ichimura, Akira Hara, Kenneth J. Mackin},
+year=2019,
+title={Adaptive structure learning method of deep belief network using neuron generation-annihilation and layer generation},
+publisher={Neural Computing and Applications, Vol.31(11), pp.8035-8049}
+}
+
+@book{sankou5,
+author={G.E.Hinton},
+year=2012,
+title={A Pratical Guide to Training Restricted Boltzmann Machines},
+publisher={Neural Network,Trick of the Trade,Lecture Notes in Computer Science(LNCS,7700),599/619,Springer }
+}
+
+@book{sankou6,
+author={G.E.Hinton,S.Osindero,Y teh},
+year=2006,
+title={A fast learning algorithm for deep belief nets},
+publisher={Neural Computation,18-7,1527/1554}
+}
+
+@book{sankou7,
+author={Shin Kamada, Takumi Ichimura},
+year=2016,
+title={An Adaptive Learning Method of Restricted Boltzmann Machine by Neuron Generation and Annhilation Algorithm},
+publisher={Proc.of 2016 IEEE Internatinal Conference on Systems,Man,and Cybernetics(IEEE SMC 2016),1273/1278}
+}
+
+@book{sankou8,
+author={T.Lyons,M.Skitmore},
+year=2012,
+title={Project risk management in the Queensland engineering construction industry:A survey},
+publisher={International Journal of Project Management,22-1,51/61}
+}
+
+@book{sankou9,
+author={岡田直人,黒岩丈介,小高知宏,白井治彦,諏訪いずみ},
+year=2018,
+title={深層学習による時系列データ処理手法の検討},
+publisher={福井大学工学研究科知能システム工学専攻修士論文}
+}
+
+@book{sankou10,
+author={細田雅光,黒岩丈介,小高知宏,白井治彦,諏訪いずみ},
+year=2018,
+title={深層学習による表情認識手法の開発},
+publisher={福井大学工学部知能システム工学科卒業論文}
+}

@@ -1,0 +1,318 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+\usepackage[dvips]{graphicx}
+\usepackage{amsmath}
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+電気使用量予測のための深層学習手法\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{1}{10}{5}{(火)}{\ 小松　大起}
+\section{はじめに}
+\subsection{研究背景}
+
+2011 年 3 月 11 日に発生した東日本大震災以降,  低コストかつ効率的な発電方法であり全体の 2 割から 4 割を占めていた原子力発電は安全性に問題があるとされ 2021 年 5 月現在では停止中の 2 基も合わせて合計 9 基の原子力発電所が稼働するのみとなっている\cite{1}. 
+それにより, 原子力発電よりコストの高い火力発電での発電量が増え発電コストの増加による電気料金の値上げが生じ,  我々消費者の負担増加に繋がっている\cite{sankou2}.
+
+電力使用量の予測を行うことができた場合, 長期的には季節ごとの電力使用量に基づいた最適な時期での化石燃料の調達, 短期的には電力使用量が増える時間帯において各発電所の稼働状態を適切に決めることが可能であると考えられる.
+大まかな電力使用量の推移は経験から判別が可能であると思われるが, 深層学習を用いて時系列データ予測を行うことによってより詳細な予測が可能となり, 今後の計画を立てることができるようになると考えられる\cite{sankou3}.
+適切な予測を行い適切な量の電力供給や燃料調達を行うことができれば電力会社は過剰な発電や, 供給不足による突発的に高コストな発電方法, 効率の悪い発電方法を行う必要がなくなる.
+
+近年, 人工知能に関する多くの分野で情報処理技術として知的処理技術の一つである深層学習が用いられている.
+深層学習とは, ニューロンの層が多段に組み上げられたニューラルネットーワークのことを指す\cite{sankou4}.
+深層学習が用いられる分野としては, 人物の行動認識や表情認識に挙げられるような画像処理に関わるものや, 話し言葉や書き言葉などの我々が普段使うような自然言語を対象として, それらの言葉が持つ意味を解析する自然言語処理や, 株価や電気使用量などの予測にも用いられる.
+
+そこで本研究の目的は, 電力使用量のみを入力とした電力使用量予測では気象要因による変化を捉えきれないと考えられるため, 気象要因を入力とした際に最適な入力の組み合わせを選択し, 最適なモデル構造を見つけてより詳細な深層学習を用いた予測を実現することである.
+
+\subsection{研究目的}
+
+電気使用量は人間の認知は時間経過による視覚世界の変化の予測が可能である. 近年では実際に予測動画を作る研究も行われてきている.[sankou2]電力使用量を予測することによる, 電気料金の予測が可能になると考えられる. 本研究では, 電力使用量を主データとし, 天気や気温が与えうる電力使用量の変化を考慮した電気使用料の予測を行うことを目的とする. 
+
+\section{深層学習モデル}
+\subsection{RNN}
+ある時刻での中間層の出力を次の時刻の層の入力として利用できるような再帰的構造を持ったニューラルネットワークモデルのことを RNN（ Recurrent Neural Network ）と呼ぶ. RNN は 1986 年の David E. Rumelhart による研究に基づき開発されたモデルである\cite{sankou6}. 
+前の時刻での中間層の出力を扱うことにより, ある時点での中間層の出力がそれ以降の出力にも影響を及ぼしていくことになる.
+そうすることにより過去の情報を扱うことになるため, 
+時系列データを扱うことができるようになっている. 
+時間を追って得られたデータを時系列データと呼び,
+画像などのデータが一つのベクトル $\bm{x}_n$ で表されるのに対し,
+$(\bm{x}(1),… \bm{x}(t),… \bm{x}(T))$ という T 個のデータが 1 つの入力データ群として扱われる.
+時系列データには,
+本実験でも扱っている気温の推移や降水量の変化などの気象データ,
+株価や売上の推移などが挙げられ,
+これらのデータは一般的なデータの集まりではなく,
+データの並び自体に意味を持つ. 
+RNN において, 
+時刻 $t$ での入力を $\bm{x}(t)$ .
+入力層と中間層の間の重みを $U$ ,
+また中間層と出力層の間の重みを $W$ ,
+$f$, $g$ を活性化関数とすると中間層の出力値 $\bm{s}(t)$ とネットワークの出力 $y(t)$ は,
+以下のように表すことができる.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+  s(t) = f(U\bm{x}(t) + W\bm{s}(t-1))
+  %%%%%%%%%%%%
+  \label{eq:RNN1}
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+  y(t) = g(W\bm{s}(t))
+  %%%%%%%%%%%%
+  \label{eq:RNN2}
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{LSTM}
+
+LSTM（Long Short-Term Memory）は RNN の拡張として 1997 年に Sepp Hochreiter 及び, Jürgen Schmidhuber によって発表された時系列データを扱うモデルである\cite{sankou5}.
+Long Term Memory（長期記憶）と Short Term Memory（短期記憶）という神経科学における用語から取られており,
+RNN はその構造上, 時刻が離れているデータ間の依存関係を学習することが難しく, その弱点を克服するために開発されたモデルが LSTM である. 
+LSTM は近い過去を扱うことのできる短期記憶と遠い過去を扱うことができる長期記憶が可能である. 
+LSTM は RNN の中間層を LSTM block と呼ばれるメモリと入力ゲート, 忘却ゲート, 出力ゲートの 3 つのゲートを持つブロックに置き換えることで実現されている.
+メモリは入力の依存性を記憶し, 入力ゲートはメモリへ与える入力の調節を行い, 忘却ゲートはメモリ中の値をどれだけ忘れるかを調節, 出力ゲートはメモリ中の値のどれだけを活性化関数に与えるかの調節を行う. 
+また, 中間層の内部状態を以下のように表す.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+ \bm{f}(t) = σ_g(U_f\bm{x}(t) + W_f\bm{h}(t-1))
+\end{equation}
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+ \bm{i}(t) = σ_g(U_i\bm{x}(t) + W_i\bm{h}(t-1))
+\end{equation}
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+ \bm{o}(t) = σ_g(U_o\bm{x}(t) + W_o\bm{h}(t-1))
+\end{equation}
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+ \bm{c}(t) = \bm{f}(t) \odot \bm{c}(t-1) + \bm{i}(t) \odot σ_c(U_c\bm{x}(t) + W_c\bm{h}(t-1))
+\end{equation}
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+ y(t) = \bm{o}(t) \odot σ_h(\bm{c}(t))
+\end{equation}
+\vspace{0mm}
+%%%%%%%%%%%%%%%%%
+
+RNN と同じく入力層と中間層の間の重みを $U$ ,
+中間層と出力層の間の重みを $W$ ,
+$σ$ を活性化関数とすると, $\bm{f}(t)$ は忘却ゲート, $\bm{i}(t)$ は入力ゲート, $\bm{o}(t)$ は出力ゲートでの活性化ベクトル, $\bm{c}(t)$ はメモリの活性化ベクトル,  
+中間層の出力値 $\bm{h}(t)$ とネットワークの出力値 $y(t)$ は, 以上のように示される. $\odot$ はアダマール積を示し, ベクトルの要素ごとの積を行う演算子である. 
+また, 本研究では LSTM を用いる.
+
+\section{活性化関数}
+活性化関数とは, ニューロン間の移動に伴い入力値を別の数値に変換して出力するための関数のことである.
+\subsection{ステップ関数}
+ステップ関数は, 入力が 0 未満の場合には常に出力値が 0 となり, 0 以上の場合には常に出力値が 1 となるような関数を指す. ステップ関数は, パーセプトロンから用いられている関数であり入力 0 を起点として階段状のグラフを示す. この起点を閾値と呼ぶ. 入力を $x$ として $f（x）$ を出力とすると数式は以下の式で表される.
+\begin{equation}
+f（x）= \begin{cases}
+0, & （x < 0）\\
+1, & （x \geq 1）
+\end{cases}
+\end{equation}
+
+\section{実験}
+\subsection{用いるモデル構造}
+
+\subsection{用いるデータ}
+
+
+\subsubsection{RNN}
+
+\subsubsection{LSTM}
+
+
+\subsection{予測結果}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}[t]
+\begin{center}
+  \caption{天気概況用語の説明}
+  \begin{tabular}{|c|c|} \hline
+    天気概況用語 & 大気の状態 \\ \hline \hline
+    「快晴」 & 雲量 1 以下の状態が長く継続している状態 \\ \hline
+    「晴」 & 雲量 2 以上 8 以下の状態 \\ \hline
+    「曇」 & 雲量 9 以上であり, 中・下層雲量が上層雲量よりも多く, 降水現象がない状態 \\ \hline
+    「薄雲」 & 雲量 9 以上であり, 上層雲量が中・下層雲量よりも多く, 降水現象がない状態 \\ \hline
+    「大風」 & 10 分間平均風速が 15.0m/s 以上の風を観測した場合 \\ \hline
+    「霧」 & 大気中に浮遊するごく小さな水滴を観測し, 水平視程が 1km 未満の場合 \\ \hline
+    「霧雨」 & きわめて多数の細かい水滴だけがかなり一様に降る降水を観測した場合 \\ \hline
+    「雨」 & 雨を観測した場合 \\ \hline
+    「大雨」 & 「雨」の場合で, 特に降水量が 30.0mm 以上の状態 \\ \hline
+    「暴風雨」 & 「大雨」かつ「大風」を観測した場合 \\ \hline
+    「みぞれ」 & 雨と雪が混在して降る降水を観測した場合 \\ \hline
+    「雪」 & 雪を観測した場合 \\ \hline
+    「大雪」 &
+    \begin{tabular}{c}
+    「雪」の場合で, 北海道, 青森, 秋田, 盛岡, 山形, 新潟, 金沢, 富山, 長野, 福井, 松江においては\\当該時間帯の降雪の深さが 20cm 以上であった場合. \\また, それ以外の地域においては降雪の深さが 10cm 以上であった場合
+    \end{tabular}\\ \hline
+    「暴風雪」 & 「大雪」かつ「大風を」を観測した場合 \\ \hline
+    「地ふぶき」 & 積もった雪が風のために空中に噴き上げられ, それにより視程が 1km 未満の状態 \\ \hline
+    「ふぶき」 & 「地ふぶき」かつ「雪」を観測した場合 \\ \hline
+    「ひょう」 & 直径 5mm 以上の氷の粒またはかたまりの降水を観測した場合 \\ \hline
+    「あられ」 & 直径が概ね 5mm 未満の白色不透明・半透明または透明な氷の粒の降水を観測した場合 \\ \hline
+    「雷」 & 雷電または強度 1 以上の雷鳴のいずれかを観測した場合 \\ \hline
+    「×」 & 
+    \begin{tabular}{c}
+    何らかの理由（煙霧による視程障害等）により, 雲の状態が不明で, \\天気概況が不明または欠測である場合 \\
+    \end{tabular}\\ \hline
+  \end{tabular}
+\end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[t]
+\centering
+  \caption{: 天気概況による数値付け}
+  \vspace{3mm}
+  \begin{tabular}{|c|c|} \hline
+    天気概況 & 対応する数値 \\ \hline \hline
+    「快晴」 & 0.0 \\ \hline
+    「晴」 & 0.0 \\ \hline
+    「曇」 & 0.5 \\ \hline
+    「薄雲」 & 0.5 \\ \hline
+    「大風」 & 0.3 \\ \hline
+    「霧」 & 0.6 \\ \hline
+    「霧雨」 & 0.7 \\ \hline
+    「雨」 & 1.0 \\ \hline
+    「大雨」 & 1.0 \\ \hline
+    「暴風雨」 & 1.0 \\ \hline
+    「みぞれ」 & 1.0 \\ \hline
+    「雪」 & 1.0 \\ \hline
+    「大雪」 & 1.0 \\ \hline
+    「暴風雪」 & 1.0 \\ \hline
+    「地ふぶき」 & 1.0 \\ \hline
+    「ふぶき」 & 1.0 \\ \hline
+    「ひょう」 & 1.0 \\ \hline
+    「あられ」 & 1.0 \\ \hline
+    「雷」 & 1.0 \\ \hline
+    「×」 & 0.0 \\ \hline
+  \end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{先週までの作業}
+%\begin{itemize}
+%
+%\end{itemize}
+\section{先週の作業}
+\begin{itemize}
+        \item 紀要提出した. 
+        \item 入力層を複数持つモデルを構築して電力使用量のみを LSTM で予測を行えるようにする.
+        \item 相関係数では直線的な数値の評価しか行えず曲線的な評価を行うことができない. 相関係数が正しいのかを示すために, 散布図での比較を行う.
+        天気はただ単に天気を分類した質的データであるため相関係数での比較ができない. 質的データとの比較や曲線的評価を行うための別の尺度を用いて評価を行いたい. 
+        \item 相互情報量を使ったらできるかも？
+\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+        \item 気温を入力とするときに, 生データそのままと, 平均からの差の絶対値を入れたときで区別する.  
+        \item 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[t]
+\centering
+  \caption{: 電力使用量と各項目の期間ごとの相関係数}
+  \vspace{3mm}
+  \begin{tabular}{|c||c|c|c|} \hline
+     &  気温 & 降水量 & 天気 \\ \hline \hline
+    時間 & 0.085 & -0.024 & -0.014 \\ \hline
+    日付 & -0.069 & -0.069 & -0.13 \\ \hline
+    週 & -0.075 & -0.20 & -0.050 \\ \hline
+  \end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[t]
+\centering
+  \caption{: 電力使用量と気温の平均からの差の絶対値との相関係数}
+  \vspace{3mm}
+  \begin{tabular}{|c||c|} \hline
+     &  気温 \\ \hline \hline
+    時間 & 0.555 \\ \hline
+    日付 & 0.798 \\ \hline
+    週 & 0.905 \\ \hline
+  \end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[!hb]
+  \begin{center}
+    \includegraphics[scale=0.17]{image/image2.eps}
+    \caption{2020 年の 4 項目の散布図}
+  \end{center}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[!hb]
+  \begin{center}
+    \includegraphics[scale=0.17]{image/image4.eps}
+    \caption{2020 年の気温を平均値からの差の絶対値にしたときの散布図}
+  \end{center}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[!hb]
+  \begin{center}
+    \includegraphics[scale=0.17]{image/image3.eps}
+    \caption{降水量の推移}
+  \end{center}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{itemize}
+%\section{来週以降の作業}
+%\begin{itemize}
+%\end{itemize}
+\clearpage
+\begin{thebibliography}{99}
+
+\bibitem{1}
+経済産業省・資源エネルギー庁, 日本の原子力発電所の状況, 2021.
+
+\bibitem{sankou2}
+松尾 雄司, 永富 悠, 村上朋子, 有価証券報告書を用いた火力・原子力発電コスト構造の分析, Journal of Japan Society of Energy and Resources, Vol. 33, No. 5
+%Kim, Y. E., Schmidt, E. M., Migneco, R., Morton, B. G., Richardson, P., Scott, J., ... & Turnbull, D. (2010, August). Music emotion recognition: A state of the art review. In Proc. ismir (Vol. 86, pp. 937-952).
+
+\bibitem{sankou3}
+鎌田 真, 市村 匠, リカレント構造適応型 Deep Belief Network による時系列データの学習, 計測自動制御学 会論文集, Vol.54, No.8, 628/639(2018).
+
+\bibitem{sankou4}
+浅川伸一. python で体験する深層学習. コロナ社, 2016.
+%Simonyan, K., & Zisserman, A. (2014). Very deep convolutional networks for large-scale image recognition. arXiv preprint arXiv : 1409.1556.
+
+\bibitem{sankou5}
+%これはLstmの論文でOK
+Sepp Hochreiter; Jürgen Schmidhuber (1997). Long short-term memory. Neural Computation 9 (8): 1735–1780.
+
+\bibitem{sankou6}
+Williams, Ronald J.; Hinton, Geoffrey E.; Rumelhart, David E. (October 1986). Learning representations by back-propagating errors. Nature 323 (6088): 533–536. doi:10.1038/323533a0. ISSN 1476-4687.
+%\section{参考文献}
+%[1]Rosenblatt, F. (1958). The perceptron: A probabilistic model for information storage and organization in the brain. Psychological Review, 65(6), 386-408.
+%[1]浅川伸一. python で体験する深層学習. コロナ社, 2016.
+%[2]William Lotter, Gabriel Kreiman, David Cox, “Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning”, ICLR, 2017
+%[3]ニューラルネットによる人の基本表情認識
+
+\end{thebibliography}
+
+\end{document}

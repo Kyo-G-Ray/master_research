@@ -1,0 +1,23 @@
+\contentsline {section}{\numberline {1}はじめに}{1}{}%
+\contentsline {subsection}{\numberline {1.1}研究背景}{1}{}%
+\contentsline {subsection}{\numberline {1.2}研究目的}{1}{}%
+\contentsline {section}{\numberline {2}物体認識実験}{2}{}%
+\contentsline {subsection}{\numberline {2.1}物体認識}{2}{}%
+\contentsline {subsubsection}{\numberline {2.1.1}畳み込み層}{2}{}%
+\contentsline {subsubsection}{\numberline {2.1.2}プーリング層}{3}{}%
+\contentsline {subsubsection}{\numberline {2.1.3}全結合層}{3}{}%
+\contentsline {subsubsection}{\numberline {2.1.4}CNN のモデル}{3}{}%
+\contentsline {subsubsection}{\numberline {2.1.5}CNN の学習方法}{5}{}%
+\contentsline {subsection}{\numberline {2.2}RNN（ Recurrent Neural Network ）の概要}{5}{}%
+\contentsline {subsection}{\numberline {2.3}LSTM（Long Short - Term Memory ）の概要}{5}{}%
+\contentsline {section}{\numberline {3}ニューラルネットワークモデル}{7}{}%
+\contentsline {section}{\numberline {4}データ間の特性}{8}{}%
+\contentsline {subsection}{\numberline {4.1}電力使用量}{8}{}%
+\contentsline {subsection}{\numberline {4.2}天気}{8}{}%
+\contentsline {subsection}{\numberline {4.3}気温}{8}{}%
+\contentsline {subsection}{\numberline {4.4}降水量}{8}{}%
+\contentsline {subsection}{\numberline {4.5}各データ間の相関係数}{8}{}%
+\contentsline {section}{\numberline {5}考察}{10}{}%
+\contentsline {section}{\numberline {6}まとめと今後の課題}{11}{}%
+\contentsline {subsection}{\numberline {6.1}まとめ}{11}{}%
+\contentsline {subsection}{\numberline {6.2}今後の課題}{11}{}%

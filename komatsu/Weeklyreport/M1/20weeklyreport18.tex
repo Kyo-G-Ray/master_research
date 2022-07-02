@@ -1,0 +1,83 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+\usepackage{graphicx}
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+深層学習を用いた動画像からの危険認知手法のための基礎的研究\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{18}{10}{13}{(火)}{\ 小松　大起}
+\section{本実験の目的}
+人間の認知は時間経過による視覚世界の変化の予測が可能である.従来の深層学習においては静止画の画像処理が中心であったが, 本研究では動画像から未来フレームの画像生成へと拡張を行い, 危険認知や行動予測などへの予測画像応用を行うための予測画像生成及び, その生成画像の評価方法を明らかにすることである.
+\section{PredNet}
+PredNet は Deep Recurrent Convolutional Neural Network  の 1 種で 神経科学の概念である Predictive Coding を組み込んで作られたモデルである. 2016 年に William Lotter, Gabriel Kreiman, David Cox の 3 氏によって公開された.
+
+\subsection{PredNet の層構造}
+PredNet の各層には 4 つの素子が存在しておりそれぞれ、Target, Representation, Prediction, Errorと呼ぶ.
+Target は下層からの出力である誤差信号をエンコード,符号化する.
+Representation は Recurrent unitで,上層からの出力,側方からの誤差信号, 1 ステップ前の自分の出力を受け取る.
+Representation unit は Target の予測をする Prediction unit に投射し,入力の予測が出力される.
+Error は Prediction と Target の誤差であり, Error は上層に送られる.
+この Error が小さくなるように学習を進めていく.
+また,層構造の例を図 2 に示す.
+
+ \begin{figure}[hb]
+\includegraphics[scale=0.4]{prednet.png}
+ \caption{PredNet の層構造の例}
+\end{figure}
+%%%%%%%%%%
+\begin{figure}[hb]
+\includegraphics[scale=0.4]{DeepPrednet_formula.png}
+ \caption{PredNet の更新式}
+\end{figure}
+更新式は(1)から(4)のように表される.
+
+\section{使用した動画像}
+\subsection{KITTI}
+ドイツの都市環境を運転している車の屋根に取り付けられたカメラによってキャプチャされたデータセットである.City, Residential, Road のカテゴリに分かれており,それぞれ都市街,住宅地,高速道路というようなシーン分けがされている.それぞれのカテゴリには City には 28 シーン, Residential には 21 シーン, Road には 12 シーン存在している.合計 61 のシーンがあるが,それぞれのカテゴリから 10 フレームがテストデータとしてサンプリングされ予測画像生成に用いられ, 57 シーンが訓練に用いられ, 4 シーンが検証に用いられる.また,用いられる画像は中央でトリミングされて,128 × 160 ピクセルの画像となっている. 1 フレームは 0.1 秒である.最大 5 フレーム先の画像を生成することが可能.
+
+%\section{先週までの作業}
+%\begin{itemize}
+%          \item 
+
+\begin{figure}[hb]
+\begin{center}
+\includegraphics[scale=0.8]{plot_1.png}
+\caption{PredNet の出力結果}
+\end{center}
+\end{figure}
+
+%\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}       
+         \item オートエンコーダ
+         \item MOT の試作品作り, 授業課題
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+         \item SPI の勉強, 及び WEB 試験の受験
+         \item インターンへのエントリー
+\end{itemize}
+
+
+
+
+\end{document}

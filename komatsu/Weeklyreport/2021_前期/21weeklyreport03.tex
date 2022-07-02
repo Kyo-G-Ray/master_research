@@ -1,0 +1,136 @@
+\input{texheder.tex}
+\usepackage{setspace} % setspaceパッケージのインクルード
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{amsmath}
+%「Weekly Report」 
+\newcommand{\Weekly}[5]{
+\twocolumn[
+ \begin{center}
+  \bf
+ 第 #1 回　Weekly Report\\
+ \huge
+電気使用量予測のための深層学習手法\\
+
+ \end{center}
+ \begin{flushright}
+  #2 月\ \ \  #3 日 \ \ \ #4 \\\
+  #5
+ \end{flushright}
+]
+}
+%\setstretch{0.5} % ページ全体の行間を設定
+
+\begin{document}
+
+\Weekly{3}{4}{27}{(火)}{\ 小松　大起}
+\section{はじめに}
+\subsection{研究背景}
+近年, 情報処理技術として知的処理技術の一つである深層学習が様々な分野で用いられている. 深層学習とは, ニューロンの層が多段に組み上げられたニューラルネットワークのことを指す.[1]ニューラルネットワークとは人間の脳の仕組みから着想を得たものであり, 神経回路網をコンピュータ上で表現しようと作られた数理的モデルである.深層学習で用いられる分野としては株価予想や人物認識や表情認識, 擬似的なデータを生成するアルゴリズムである GAN を用いた画像生成などに挙げられる画像処理, 話し言葉や書き言葉など我々が普段使うような自然言語を対象として, それらの言葉が持つ意味を解析する自然言語処理などがある.
+
+\subsection{研究目的}
+
+人間の認知は時間経過による視覚世界の変化の予測が可能である. 近年では実際に予測動画を作る研究も行われてきている.[2]電力使用量を予測することによる, 電気料金の予測が可能になると考えられる. 本研究では, 電力使用量を主データとし, 天気や気温が与えうる電力使用量の変化を考慮した電気使用料の予測を行うことを目的とする. 
+
+\section{深層学習モデル}
+\subsection{RNN}
+\subsection{LSTM}
+
+\section{活性化関数}
+活性化関数とは, ニューロン間の移動に伴い入力値を別の数値に変換して出力するための関数のことである.
+\subsection{ステップ関数}
+ステップ関数は, 入力が 0 未満の場合には常に出力値が 0 となり, 0 以上の場合には常に出力値が 1 となるような関数を指す. ステップ関数は, パーセプトロンから用いられている関数であり入力 0 を起点として階段状のグラフを示す. この起点を閾値と呼ぶ. 入力を $x$ として $f（x）$ を出力とすると数式は以下の式で表される.
+\begin{equation}
+f（x）= \begin{cases}
+0, & （x < 0）\\
+1, & （x \geq 1）
+\end{cases}
+\end{equation}
+
+\section{事前実験}
+\subsection{用いるモデル構造}
+本実験では, RNN 及び LSTM を用いて電力使用量の予測を行う. 本実験では, 予測結果は全て t+1 ステップ後の結果を表している. 
+\subsection{用いるデータ}
+本実験で用いるデータは, 東京電力パワーグリッド株式会社が提供している 2016 年から 2020 年までの電力使用量のデータであり, 年度, 日にち, 1 時間ごとの電力使用量（万 Kw）が csv ファイルで提供されている. また, 用いるデータの一例を図 0 に示す.
+
+\begin{figure}[hb]
+\centering
+\includegraphics[scale=0.5]{exe_csv.pdf}
+ \caption{用いる電力使用量データ例}
+\end{figure}
+
+\subsubsection{RNN}
+keras の simpleRNN というモデルを用いて訓練データと試験データを 8:2 に分けて学習データの作成を行った. 中間層 1 層, 隠れニューロン数は 100 とした. また、その時の予測の結果を図 0 に示す.
+
+\begin{figure*}[ht]
+\begin{center}
+\includegraphics[scale=0.6]{rnn_pred_month.pdf}
+\end{center}
+\vspace{-80mm}
+\caption{RNN 訓練データに対する予測結果}
+\end{figure*}
+
+\begin{figure*}[b]
+\begin{center}
+\includegraphics[scale=0.6]{lstm_pred_month.pdf}
+\end{center}
+\vspace{-80mm}
+\caption{LSTM 訓練データに対する予測結果}
+\end{figure*}
+
+\subsubsection{LSTM}
+RNN と同条件で予測を行った結果を以下の図に示す.
+
+\begin{figure*}[ht]
+\begin{center}
+\includegraphics[scale=0.55]{rnn_pred_day.pdf}
+\vspace{-75mm}
+\caption{RNN テストデータに対する予測結果}
+\end{center}
+\end{figure*}
+
+\begin{figure*}[phb]
+\begin{center}
+\includegraphics[scale=0.55]{lstm_pred_day.pdf}
+\vspace{-75mm}
+\caption{LSTM テストデータに対する予測結果}
+\end{center}
+\end{figure*}
+
+\subsection{予測結果}
+
+\section{用いる追加データ}
+本研究では, 電力使用力の予測を天気, 気温などの外的要因から行うことを目的とする.
+国土交通省の気象庁がホームページで公開している気温, 天気の情報を用いる.
+また, そのデータの例を図 0 に示す. 天気予報による天気の予測と実際の電気使用量の関連性を調べ, 
+
+\begin{figure*}[phb]
+\centering
+\includegraphics[scale=0.8]{exe_wether.pdf}
+\caption{東京都における天気データ例}
+\end{figure*}
+
+%\section{先週までの作業}
+%\begin{itemize}
+%        \item ES 書くの難しかった.
+%\end{itemize}
+
+\section{今週の作業}
+\begin{itemize}
+        \item 表に載せた天気それぞれに対して数値を当てはめてみる. 現在観測できる限りでは, 快晴, 晴, 薄雲, 曇, 雨, 大雨がある. それと雷を伴うやあられを伴うなどというものもある.
+        \item 事前実験のモデルを改良して一番良い精度のものを見つける.
+        \item t+1 ではない予測を行う.
+\end{itemize}
+
+\section{来週以降の作業}
+\begin{itemize}
+         \item 
+\end{itemize}
+
+\section{参考文献}
+[1]浅川伸一. python で体験する深層学習. コロナ社, 2016.
+[2]William Lotter, Gabriel Kreiman, David Cox, “Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning”, ICLR, 2017
+
+
+
+\end{document}
