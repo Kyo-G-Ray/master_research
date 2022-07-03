@@ -7,7 +7,9 @@ import matplotlib.pyplot as plt
 
 
 
-df = pd.read_csv("./data/week.csv", usecols=[0,1])
+# df = pd.read_csv("./data/time.csv", usecols=[0,1])
+df = pd.read_csv("./data/day.csv", usecols=[0,1])
+# df = pd.read_csv("./data/week.csv", usecols=[0,1])
 print(df.head())
 
 # time
@@ -70,18 +72,20 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
 
 
     # 週ごと範囲
-    outlier = outlier.reindex(range(313))
+    # outlier = outlier.reindex(range(313))
+    # outlier.to_csv('output/outlier_week_30.csv')
 
     # 日にちごと範囲
-    #    outlier = outlier.reindex(range(1736))
+    outlier = outlier.reindex(range(2192))
+    outlier.to_csv('output/outlier_day.csv')
 
     # 時間ごと範囲
-    #    outlier = outlier.reindex(range(41664))
+    # outlier = outlier.reindex(range(52585))
+    # outlier.to_csv('output/outlier_time.csv')
+
     print(outlier)
 
 
-    #    a = outlier[()]
-    outlier.to_csv('output/outlier_week_30.csv')
 
     #    ax.legend()
     plt.legend(loc='lower right', bbox_to_anchor=(1, 1))
