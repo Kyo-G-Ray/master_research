@@ -20,12 +20,14 @@ from sklearn import preprocessing
 
 
 # データ読み込み
-# df_2016 = pd.read_csv('df_2016.csv')
-# df_2017 = pd.read_csv('df_2017.csv')
-# df_2018 = pd.read_csv('df_2018.csv')
-# df_2019 = pd.read_csv('df_2019.csv')
-# df_2020 = pd.read_csv('df_2020.csv')
-dataframe = pd.read_csv('./data/week.csv',usecols=[1])
+# 時間ごと
+dataframe = pd.read_csv('./data/hazure_time.csv',usecols=[1])
+
+# 日ごと
+# dataframe = pd.read_csv('./data/hazure_day.csv',usecols=[1])
+
+# 週ごと
+# dataframe = pd.read_csv('./data/hazure_week.csv',usecols=[1])
 print(dataframe)
 
 # データ結合
@@ -134,31 +136,57 @@ from tensorflow.keras import layers
 
 
 # RNNモデルの構築
-hidden_neurons = 300
+hidden_neurons = 100
 
 model = keras.Sequential()
 model.add(keras.layers.InputLayer(batch_input_shape=(None, in_sequences, 1)))
-model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
-model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+
+
+# 1 層の時
 model.add(keras.layers.SimpleRNN(hidden_neurons))
+
+
+# 2 層の時
+# model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+# model.add(keras.layers.SimpleRNN(hidden_neurons))
+
+
+# 3 層の時
+# model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+# model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+# model.add(keras.layers.SimpleRNN(hidden_neurons))
 #model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=False))
+
+
+
 model.add(keras.layers.Dense(1))
 model.add(keras.layers.Activation("relu"))
 
 model.summary()
+
 
 # モデルのコンパイル
 opt = keras.optimizers.Adam(lr=0.00001)
 model.compile(loss="mean_squared_error", optimizer=opt)
 
 #callback で学習終了条件を追加
-call = keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, verbose=1, mode='auto')
+call = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
+# call = keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, verbose=1, mode='auto')
+
 
 
 # 学習
-history = model.fit(x_train, y_train, 
-                    batch_size=1, epochs=100,
-                    validation_data=(x_test, y_test))
+
+# time
+history = model.fit(x_train, y_train,batch_size=64, epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
+
+
+# day
+# history = model.fit(x_train, y_train,batch_size=3,epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
+
+
+# week
+# history = model.fit(x_train, y_train,batch_size=1,epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
 
 
 
