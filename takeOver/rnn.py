@@ -21,7 +21,10 @@ from sklearn import preprocessing
 
 # データ読み込み
 # 時間ごと
+# 電力使用量のみ
 dataframe = pd.read_csv('./data/hazure_time.csv',usecols=[1])
+# 4 項目を入力
+# dataframe = pd.read_csv('./data/hazure_time.csv',usecols=[1,2,3,4,5])
 
 # 日ごと
 # dataframe = pd.read_csv('./data/hazure_day.csv',usecols=[1])
@@ -136,14 +139,19 @@ from tensorflow.keras import layers
 
 
 # RNNモデルの構築
-hidden_neurons = 100
+hidden_neurons = 200
 
 model = keras.Sequential()
+
+# 電力使用量のみを入力
 model.add(keras.layers.InputLayer(batch_input_shape=(None, in_sequences, 1)))
+
+# 4 項目を入力 （多分間違っとる）
+# model.add(keras.layers.InputLayer(batch_input_shape=(None, in_sequences, 5)))
 
 
 # 1 層の時
-model.add(keras.layers.SimpleRNN(hidden_neurons))
+# model.add(keras.layers.SimpleRNN(hidden_neurons))
 
 
 # 2 層の時
@@ -152,9 +160,9 @@ model.add(keras.layers.SimpleRNN(hidden_neurons))
 
 
 # 3 層の時
-# model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
-# model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
-# model.add(keras.layers.SimpleRNN(hidden_neurons))
+model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+model.add(keras.layers.SimpleRNN(hidden_neurons))
 #model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=False))
 
 
