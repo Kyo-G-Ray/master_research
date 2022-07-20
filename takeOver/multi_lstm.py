@@ -85,7 +85,7 @@ trainX = numpy.reshape(trainX, (trainX.shape[0], trainX.shape[1], trainX.shape[2
 testX = numpy.reshape(testX, (testX.shape[0], testX.shape[1], testX.shape[2]))
 
 # create and fit the LSTM network
-hidden_neurons = 200
+hidden_neurons = 150
 
 
 model = keras.Sequential()
@@ -95,14 +95,14 @@ model = keras.Sequential()
 
 
 # 2 層の時
-model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+# model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+# model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
 
 
 # 3 層の時
-# model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-# model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-# model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
 
 
 model.add(keras.layers.Dense(1))
