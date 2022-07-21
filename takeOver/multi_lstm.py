@@ -2,6 +2,7 @@ import numpy
 import matplotlib.pyplot as plt
 import pandas
 import math
+from pyparsing import nums
 #from keras.models import Sequential
 #from keras.layers import Dense
 #from keras.layers import LSTM
@@ -17,16 +18,28 @@ from sklearn import preprocessing
 
 
 
+# 使用データ・層数・ニューロン数定義
+whichData = input('データ (t or d or w): ')
+numSou = input('層数 (1 or 2 or 3): ')
+numSou = int(numSou)
+numNeuron = input('ニューロン数 (75〜200): ')
+numNeuron = int(numNeuron)
+
+
+
 #データ読み込み Yは最初の列に配置する
 
 # 時間ごと
-dataframe = pandas.read_csv('./data/hazure_time.csv', usecols=[0,1,5])
+if whichData == 't':
+    dataframe = pandas.read_csv('./data/hazure_time.csv', usecols=[0,1,5])
 
 # 日ごと
-# dataframe = pandas.read_csv('./data/hazure_day.csv', usecols=[0,1,5])
+elif whichData == 'd':
+    dataframe = pandas.read_csv('./data/hazure_day.csv', usecols=[0,1,5])
 
 # 週ごと
-# dataframe = pandas.read_csv('./data/hazure_week.csv', usecols=[0,1,5])
+elif whichData == 'w':
+    dataframe = pandas.read_csv('./data/hazure_week.csv', usecols=[0,1,5])
 
 
 #dataframe['timestamp'] = dataframe['timestamp'].map(lambda _: pandas.to_datetime(_))
@@ -85,24 +98,28 @@ trainX = numpy.reshape(trainX, (trainX.shape[0], trainX.shape[1], trainX.shape[2
 testX = numpy.reshape(testX, (testX.shape[0], testX.shape[1], testX.shape[2]))
 
 # create and fit the LSTM network
-hidden_neurons = 150
+hidden_neurons = numNeuron
 
 
 model = keras.Sequential()
 
+
 # 1 層の時
-# model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))	#shape：変数数、遡る時間数
+if numSou == 1:
+    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))	#shape：変数数、遡る時間数
 
 
 # 2 層の時
-# model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-# model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+elif numSou == 2:
+    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
 
 
 # 3 層の時
-model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+elif numSou == 3:
+    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
 
 
 model.add(keras.layers.Dense(1))
@@ -123,13 +140,16 @@ model.compile(loss='mean_squared_error', optimizer=opt)
 call = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
 
 # time
-history = model.fit(trainX, trainY, epochs=1000, batch_size=64, verbose=1,callbacks=[call], validation_split=0.1)
+if whichData == 't':
+    history = model.fit(trainX, trainY, epochs=1000, batch_size=64, verbose=1,callbacks=[call], validation_split=0.1)
 
 # day
-#history = model.fit(trainX, trainY, epochs=1000, batch_size=3, verbose=1,callbacks=[call], validation_split=0.1)
+if whichData == 'd':
+    history = model.fit(trainX, trainY, epochs=1000, batch_size=3, verbose=1,callbacks=[call], validation_split=0.1)
 
 # week
-# history = model.fit(trainX, trainY, epochs=1000, batch_size=1, verbose=1, callbacks=[call], validation_split=0.1)
+if whichData == 'w':
+    history = model.fit(trainX, trainY, epochs=1000, batch_size=1, verbose=1, callbacks=[call], validation_split=0.1)
 
 #callback なし
 #history = model.fit(trainX, trainY, epochs=50, batch_size=1, verbose=1, validation_split=0.1)
@@ -156,7 +176,7 @@ plt.title('model loss')
 plt.xlabel('epoch')
 plt.ylabel('loss')
 plt.legend(['training', 'validation'], loc='upper right')
-plt.savefig('fig/lstm_gosakyokusen.eps')
+plt.savefig('fig/lstm_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_gosakyokusen.eps')
 plt.show()
 
 
@@ -217,11 +237,11 @@ tra = pandas.DataFrame(trainPredictPlot, columns=['elec_tra', 'what']).iloc[:,0]
 tes = pandas.DataFrame(testPredictPlot, columns=['elec_tes', 'what']).iloc[:,0]
 # tes.to_csv('./lstm/lstm_3_315_tes_real.csv')
 predict = pandas.concat([tra, tes, original], axis='columns')
-predict.to_csv('./lstm/lstm_3_315_predict.csv')
+predict.to_csv('./lstm/lstm_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_predict.csv')
 
 # plot baseline and predictions
 plt.plot(scaler.inverse_transform(dataset))
 plt.plot(trainPredictPlot)
 plt.plot(testPredictPlot)
-plt.savefig('fig/lstm_test.eps')
+plt.savefig('fig/lstm_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_test.eps')
 plt.show()
