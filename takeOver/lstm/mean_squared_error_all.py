@@ -16,15 +16,14 @@ numSou = int(numSou)
 numNeuron = input('ニューロン数 (75〜200): ')
 numNeuron = int(numNeuron)
 
-hazureOrNot = input('異常値(1)かそれ以外(0)か: ')
-
 
 
 
 #csvファイルを指定
 csvPath = './lstm_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_predict.csv'
 
-
+#csvファイルを読み込み
+# rows = []
 
 trainList, testList = [], []
 trainError, testError = 0, 0
@@ -37,7 +36,8 @@ with open(csvPath) as f:
   trainTrue, trainPred = [], []
   testTrue, testPred = [], []
   for row in reader:
-    if row[1] is not str and len(row[1]) != 0 and row[4] == hazureOrNot:
+    # rows.append(row)
+    if row[1] is not str and len(row[1]) != 0:
       val1 = float(row[1])
       val3 = float(row[3])
 
@@ -45,7 +45,7 @@ with open(csvPath) as f:
         trainPred.append(val1)
         trainTrue.append(val3)
 
-    if row[2] is not str and len(row[2]) != 0 and row[4] == hazureOrNot:
+    if row[2] is not str and len(row[2]) != 0:
       val2 = float(row[2])
       val3 = float(row[3])
 
@@ -83,7 +83,6 @@ cov = np.cov(preprocessing.minmax_scale(testList[0]), preprocessing.minmax_scale
 print('予測データ分散: ', varPred)
 print('正解データ分散: ', varTrue)
 print('共分散: ', cov[0][1])
-
 
 
 print('train_score1 : %.5f RMSE' % train_score1)
