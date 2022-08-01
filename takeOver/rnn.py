@@ -18,20 +18,34 @@ from sklearn import preprocessing
 
 
 
+# 使用データ・層数・ニューロン数定義
+whichData = input('データ (t or d or w): ')
+numSou = input('層数 (1 or 2 or 3): ')
+numSou = int(numSou)
+numNeuron = input('ニューロン数 (75〜200): ')
+numNeuron = int(numNeuron)
+
+
 
 # データ読み込み
+
 # 時間ごと
+if whichData == 't':
 # 電力使用量のみ
-dataframe = pd.read_csv('./data/hazure_time.csv',usecols=[1])
+    dataframe = pd.read_csv('./data/hazure_time.csv', usecols=[1])
 # 4 項目を入力
-# dataframe = pd.read_csv('./data/hazure_time.csv',usecols=[1,2,3,4,5])
+    # dataframe = pd.read_csv('./data/hazure_time.csv',usecols=[1,2,3,4,5])
 
 # 日ごと
-# dataframe = pd.read_csv('./data/hazure_day.csv',usecols=[1])
+elif whichData == 'd':
+    dataframe = pd.read_csv('./data/hazure_day.csv', usecols=[1])
 
 # 週ごと
-# dataframe = pd.read_csv('./data/hazure_week.csv',usecols=[1])
+elif whichData == 'w':
+    dataframe = pd.read_csv('./data/hazure_week.csv', usecols=[1])
+
 print(dataframe)
+
 
 # データ結合
 #df = pd.concat([df_2016, df_2017, df_2018, df_2019, df_2020])
@@ -139,7 +153,7 @@ from tensorflow.keras import layers
 
 
 # RNNモデルの構築
-hidden_neurons = 200
+hidden_neurons = numNeuron
 
 model = keras.Sequential()
 
@@ -151,19 +165,22 @@ model.add(keras.layers.InputLayer(batch_input_shape=(None, in_sequences, 1)))
 
 
 # 1 層の時
-# model.add(keras.layers.SimpleRNN(hidden_neurons))
+if numSou == 1:
+    model.add(keras.layers.SimpleRNN(hidden_neurons))
 
 
 # 2 層の時
-# model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
-# model.add(keras.layers.SimpleRNN(hidden_neurons))
+elif numSou == 2:
+    model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+    model.add(keras.layers.SimpleRNN(hidden_neurons))
 
 
 # 3 層の時
-model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
-model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
-model.add(keras.layers.SimpleRNN(hidden_neurons))
-#model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=False))
+elif numSou == 3:
+    model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+    model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=True))
+    model.add(keras.layers.SimpleRNN(hidden_neurons))
+    #model.add(keras.layers.SimpleRNN(hidden_neurons, return_sequences=False))
 
 
 
@@ -186,15 +203,18 @@ call = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, verbose=1,
 # 学習
 
 # time
-history = model.fit(x_train, y_train,batch_size=64, epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
+if whichData == 't':
+    history = model.fit(x_train, y_train,batch_size=64, epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
 
 
 # day
-# history = model.fit(x_train, y_train,batch_size=3,epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
+if whichData == 'd':
+    history = model.fit(x_train, y_train,batch_size=3,epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
 
 
 # week
-# history = model.fit(x_train, y_train,batch_size=1,epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
+if whichData == 'w':
+    history = model.fit(x_train, y_train,batch_size=1,epochs=1000,validation_data=(x_test, y_test),callbacks=[call])
 
 
 
@@ -206,7 +226,7 @@ plt.title('model loss')
 plt.xlabel('epoch')
 plt.ylabel('loss')
 plt.legend(['training', 'validation'], loc='upper right')
-plt.savefig('./fig/rnn_gosakyokusen.eps')
+plt.savefig('./fig/rnn_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + 'gosakyokusen.eps')
 plt.show()
 
 
@@ -222,9 +242,9 @@ y_train_predicted = model.predict(x_train)
 y_test_predicted = model.predict(x_test)
 
 tra = pd.DataFrame(y_train_predicted)
-tra.to_csv('./rnn/week/rnn_3_300_tra.csv')
+tra.to_csv('./rnn/rnn_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_tra.csv')
 tes = pd.DataFrame(y_test_predicted)
-tes.to_csv('./rnn/week/rnn_3_300_tes.csv')
+tes.to_csv('./rnn/rnn_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_tes.csv')
 
 
 # calculate root mean squared error
@@ -259,7 +279,7 @@ plt.plot(y_train_predicted, label = 'predicted(train)')
 plt.xlabel("Date")
 plt.ylabel("GW")
 plt.legend()
-plt.savefig('./fig/rnn_train.eps')
+plt.savefig('./fig/rnn/rnn_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_train.eps')
 plt.show()
 
 
@@ -270,5 +290,5 @@ plt.plot(y_test_predicted, label = 'predicted(test)')
 plt.xlabel("Date")
 plt.ylabel("GW")
 plt.legend()
-plt.savefig('./fig/rnn_test.eps')
+plt.savefig('./fig/rnn/rnn_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_test.eps')
 plt.show()
