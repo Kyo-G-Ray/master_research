@@ -2,6 +2,7 @@ import numpy
 import matplotlib.pyplot as plt
 import pandas
 import math
+import sys
 from pyparsing import nums
 #from keras.models import Sequential
 #from keras.layers import Dense
@@ -19,11 +20,21 @@ from sklearn import preprocessing
 
 
 # 使用データ・層数・ニューロン数定義
+whichModel = input('LSTM → l or RNN → r: ')
+
+if whichModel == 'l':
+    whichModel = 'lstm'
+elif whichModel == 'r':
+    whichModel = 'rnn'
+else:
+    sys.exit("input 'l' or 'r'")
+
 whichData = input('データ (t or d or w): ')
 numSou = input('層数 (1 or 2 or 3): ')
 numSou = int(numSou)
 numNeuron = input('ニューロン数 (75〜200): ')
 numNeuron = int(numNeuron)
+
 
 
 
@@ -103,23 +114,42 @@ hidden_neurons = numNeuron
 
 model = keras.Sequential()
 
-
-# 1 層の時
-if numSou == 1:
-    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))	#shape：変数数、遡る時間数
-
-
-# 2 層の時
-elif numSou == 2:
-    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+if whichModel == 'lstm':
+    # 1 層の時
+    if numSou == 1:
+        model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))	#shape：変数数、遡る時間数
 
 
-# 3 層の時
-elif numSou == 3:
-    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
-    model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+    # 2 層の時
+    elif numSou == 2:
+        model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+        model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+
+
+    # 3 層の時
+    elif numSou == 3:
+        model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+        model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+        model.add(keras.layers.LSTM(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+
+
+elif whichModel == 'rnn':
+    # 1 層の時
+    if numSou == 1:
+        model.add(keras.layers.SimpleRNN(hidden_neurons, input_shape=(testX.shape[1], look_back)))	#shape：変数数、遡る時間数
+
+
+    # 2 層の時
+    elif numSou == 2:
+        model.add(keras.layers.SimpleRNN(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+        model.add(keras.layers.SimpleRNN(hidden_neurons, input_shape=(testX.shape[1], look_back)))
+
+
+    # 3 層の時
+    elif numSou == 3:
+        model.add(keras.layers.SimpleRNN(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+        model.add(keras.layers.SimpleRNN(hidden_neurons, input_shape=(testX.shape[1], look_back), return_sequences=True))
+        model.add(keras.layers.SimpleRNN(hidden_neurons, input_shape=(testX.shape[1], look_back)))
 
 
 model.add(keras.layers.Dense(1))
@@ -131,7 +161,10 @@ model.add(keras.layers.Activation("relu"))
 model.summary()
 
 #optimizer を設定
-opt = keras.optimizers.Adam(lr=0.001)
+if whichModel == 'lstm':
+    opt = keras.optimizers.Adam(lr=0.001)
+elif whichModel == 'rnn':
+    opt = keras.optimizers.Adam(lr=0.00001)
 model.compile(loss='mean_squared_error', optimizer=opt)
 
 
@@ -176,7 +209,7 @@ plt.title('model loss')
 plt.xlabel('epoch')
 plt.ylabel('loss')
 plt.legend(['training', 'validation'], loc='upper right')
-plt.savefig('fig/lstm_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_gosakyokusen.eps')
+plt.savefig('fig/' + whichModel + '/' + whichModel + '_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_gosakyokusen.eps')
 plt.show()
 
 
@@ -237,11 +270,11 @@ tra = pandas.DataFrame(trainPredictPlot, columns=['elec_tra', 'what']).iloc[:,0]
 tes = pandas.DataFrame(testPredictPlot, columns=['elec_tes', 'what']).iloc[:,0]
 # tes.to_csv('./lstm/lstm_3_315_tes_real.csv')
 predict = pandas.concat([tra, tes, original], axis='columns')
-predict.to_csv('./lstm/lstm_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_predict.csv')
+predict.to_csv('./' + whichModel + '/' + whichModel + '_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_predict.csv')
 
 # plot baseline and predictions
 plt.plot(scaler.inverse_transform(dataset))
 plt.plot(trainPredictPlot)
 plt.plot(testPredictPlot)
-plt.savefig('fig/lstm_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_test.eps')
+plt.savefig('fig/' + whichModel + '/' + whichModel + '_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_test.eps')
 plt.show()
