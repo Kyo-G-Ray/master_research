@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas
 import math
 import sys
+import csv
 from pyparsing import nums
 #from keras.models import Sequential
 #from keras.layers import Dense
@@ -278,3 +279,58 @@ plt.plot(trainPredictPlot)
 plt.plot(testPredictPlot)
 plt.savefig('fig/' + whichModel + '/' + whichModel + '_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_test.eps')
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+# csv の右端に hazure 列を追加
+
+if whichData == 't':
+    dataName = 'time'
+elif whichData == 'd':
+    dataName = 'day'
+elif whichData == 'w':
+    dataName = 'week'
+
+# csvファイルを指定
+hazurePath = './data/hazureOrNot_' + dataName + '.csv'
+outputPath = './' + whichModel + '/' + whichModel + '_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_predict.csv'
+
+
+hazureList = []
+count = 0
+allList = []
+
+# csv 一行ずつ読み込んで配列追加
+with open(hazurePath) as f:
+    reader = csv.reader(f)
+
+    for row in reader:
+        hazureList.append(row[1])
+
+
+# 電力使用量と外れ値のデータ結合
+with open(outputPath) as f:
+    reader = csv.reader(f)
+
+    for row in reader:
+        # 変数に配列格納
+        rowTmp = row
+        # 配列右端に外れ値追加
+        rowTmp.append(hazureList[count])
+        # 全行のデータ
+        allList.append(rowTmp)
+        count += 1
+
+
+# csv 出力
+with open(outputPath, 'w') as f:
+    writer = csv.writer(f)
+    writer.writerows(allList)

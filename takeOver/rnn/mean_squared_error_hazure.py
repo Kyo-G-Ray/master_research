@@ -21,7 +21,7 @@ hazureOrNot = input('異常値(1)かそれ以外(0)か: ')
 
 
 
-#csvファイルを指定
+# csvファイルを指定
 csvPath = './rnn_' + str(whichData) + '_'+ str(numSou) + '_' + str(numNeuron) + '_predict.csv'
 
 
