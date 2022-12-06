@@ -1,3 +1,5 @@
 # epsが使用言語を占めるようになったので外す
 *.eps linguist-vendored
 *.eps linguist-detectable=false
+# ついでにtexも
+*.tex linguist-vendored
