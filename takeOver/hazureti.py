@@ -31,11 +31,11 @@ print('y:',y)
 ewm_mean = df.ewm(span=16).mean()  # 指数加重移動平均
 
 
-fig, ax = plt.subplots()
-ax.plot(y, label='original')
-ax.plot(ewm_mean, label='ema')
-plt.xlabel("Date", fontsize=16)
-plt.ylabel("10^4kW", fontsize=16)
+# fig, ax = plt.subplots()
+# ax.plot(y, label='original')
+# ax.plot(ewm_mean, label='ema')
+# plt.xlabel("Date", fontsize=16)
+# plt.ylabel("10^4kW", fontsize=16)
 #ax.legend()
 #plt.show()
 
