@@ -146,6 +146,11 @@ for epoch in range(num_epochs):
 
 
 # テストデータを用いて予測を行う
+X_test = test_data
+
+# テンソルに変換する
+X_test_tensor = torch.tensor(X_test, dtype=torch.float32)
+
 with torch.no_grad():
     y_pred_test = model(X_test_tensor)
     y_pred_test = y_pred_test.detach().numpy()
