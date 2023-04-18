@@ -191,7 +191,7 @@ for epoch in range(num_epochs):
 y_pred_test = np.concatenate(y_pred_test, axis=0)
 
 # 予測値をスケーラーで逆正規化
-y_pred_test = scaler.inverse_transform(y_pred_test)
+y_pred_test = scaler_y.inverse_transform(y_pred_test)
 
 # # テストデータの予測結果をnumpy配列からPandasのDataFrameに変換する
 # y_pred_test_df = pd.DataFrame(y_pred_test, columns=['predicted_power'])
