@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 
 
 
-# df = pd.read_csv("./data/time.csv", usecols=[0,1])
-df = pd.read_csv("./data/day.csv", usecols=[0,1])
+df = pd.read_csv("./data/time.csv", usecols=[0,1])
+# df = pd.read_csv("./data/day.csv", usecols=[0,1])
 # df = pd.read_csv("./data/week.csv", usecols=[0,1])
 print(df.head())
 
@@ -28,7 +28,7 @@ print('y:',y)
 
 
 # span が計算する期間
-ewm_mean = df.ewm(span=16).mean()  # 指数加重移動平均
+ewm_mean = df['RESULT'].ewm(span=24*7).mean()  # 指数加重移動平均
 
 
 # fig, ax = plt.subplots()
@@ -41,7 +41,7 @@ ewm_mean = df.ewm(span=16).mean()  # 指数加重移動平均
 
 
 # threshold で何倍以上を外れ値として扱うかを示す
-def plot_outlier(y, ewm_span=16, threshold=1.0):
+def plot_outlier(y, ewm_span=24*7, threshold=1.6):  # 変更前 ewm_span=16, threshold=1.0
     plt.rcParams["figure.figsize"] = (10, 7)
     plt.rcParams["font.size"] = 12
     y = pd.Series(y)
@@ -75,13 +75,13 @@ def plot_outlier(y, ewm_span=16, threshold=1.0):
     # outlier = outlier.reindex(range(313))
     # outlier.to_csv('output/outlier_week_30.csv')
 
-    # 日にちごと範囲
-    outlier = outlier.reindex(range(2192))
-    outlier.to_csv('output/outlier_day.csv')
+    # # 日にちごと範囲
+    # outlier = outlier.reindex(range(2192))
+    # outlier.to_csv('output/outlier_day.csv')
 
     # 時間ごと範囲
-    # outlier = outlier.reindex(range(52585))
-    # outlier.to_csv('output/outlier_time.csv')
+    outlier = outlier.reindex(range(52585))
+    outlier.to_csv('output/outlier_time.csv')
 
     print(outlier)
 
