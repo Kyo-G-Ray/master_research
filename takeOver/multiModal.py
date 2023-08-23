@@ -18,6 +18,8 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers import Input, concatenate, Dense
 
 from sklearn import preprocessing
+import warnings
+warnings.simplefilter('ignore')
 
 
 
@@ -150,6 +152,7 @@ testX2 = numpy.reshape(testX2, (testX2.shape[0], testX2.shape[1], testX2.shape[2
 
 # create and fit the LSTM network
 hidden_neurons = numNeuron
+batch_size = 32
 
 
 
@@ -159,9 +162,11 @@ input2 = Input(shape=(4,), name='other_factor')
 if whichModel == 'lstm':
     # 1 層の時
     if numSou == 1:
-        x = layers.LSTM(hidden_neurons)(input1)
+        x = layers.Embedding(output_dim=3, input_dim=2)(input1)
+        x = layers.LSTM(hidden_neurons)(x)
 
-        y = layers.LSTM(hidden_neurons)(input2)
+        y = layers.Embedding(output_dim=3, input_dim=2)(input2)
+        y = layers.LSTM(hidden_neurons)(y)
 
 
     # 2 層の時
@@ -221,10 +226,12 @@ model.compile(
 )
 
 model.fit(
-    {"elec": trainX, "other_factor": trainX2},
-    {"output": output},
+    # {"elec": trainX, "other_factor": trainX2},
+    # {"output": output},
+    [trainX,trainX2],
+    [trainY,trainY2],
     epochs=50,
-    batch_size=32,
+    batch_size=batch_size,
 )
 
 # #optimizer を設定
