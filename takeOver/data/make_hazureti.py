@@ -6,10 +6,10 @@ from pyparsing import col
 
 
 # 時間ごと
-# df = pd.read_csv('../output/outlier_time.csv', header=0, usecols=[1])
+df = pd.read_csv('../output/outlier_time.csv', header=0, usecols=[1])
 
-# 日ごと
-df = pd.read_csv('../output/outlier_day.csv', header=0, usecols=[1])
+# # 日ごと
+# df = pd.read_csv('../output/outlier_day.csv', header=0, usecols=[1])
 
 # 週ごと
 # df = pd.read_csv('../output/outlier_week_30.csv', header=0, usecols=[1])
@@ -35,10 +35,10 @@ df['HAZURE'] = hazureOrNot
 
 
 # 時間ごと
-# df.to_csv('hazureOrNot_time.csv', index=False)
+df.to_csv('hazureOrNot_time.csv', index=False)
 
 # 日ごと
-df.to_csv('hazureOrNot_day.csv', index=False)
+# df.to_csv('hazureOrNot_day.csv', index=False)
 
 # 週ごと
 # df.to_csv('hazureOrNot_week.csv', index=False)
